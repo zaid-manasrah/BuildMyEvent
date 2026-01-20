@@ -1,0 +1,78 @@
+﻿@model IEnumerable<BuildMyEvent.Models.Registration>
+
+@{
+    ViewData["Title"] = "Attendees";
+    var eventName = ViewBag.EventName as string ?? "Event";
+}
+
+<section id="event-attendees" class="py-5" style="min-height: 80vh; background: radial-gradient(circle at top, #f0f4ff 0, #ffffff 55%);">
+    <div class="container">
+        <div class="mb-4">
+            <span class="badge bg-primary-subtle text-primary mb-2" style="border: 1px solid rgba(37,99,235,0.15);">
+                Attendees
+            </span>
+            <h1 class="h3 mb-1">Guest list for @eventName</h1>
+            <p class="text-muted mb-0">
+                View everyone who registered for this event and keep track of your audience.
+            </p>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center bg-white">
+                <div>
+                    <h5 class="mb-0">Attendees</h5>
+                    <small class="text-muted">
+                        Total: @Model.Count()
+                    </small>
+                </div>
+                <div>
+                    <a asp-action="MyEvents" asp-controller="Events" class="btn btn-sm btn-outline-secondary">
+                        Back to My Events
+                    </a>
+                </div>
+            </div>
+
+            <div class="card-body p-0">
+                @if (!Model.Any())
+                {
+                    <div class="text-center py-5">
+                        <h6 class="mb-2">No attendees yet</h6>
+                        <p class="text-muted mb-0">
+                            Nobody has registered for this event yet. Share your event link to start getting registrations.
+                        </p>
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width:5%;">#</th>
+                                    <th style="width:35%;">Name</th>
+                                    <th style="width:35%;">Email</th>
+                                    <th style="width:25%;">Phone</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    var index = 1;
+                                }
+                                @foreach (var r in Model)
+                                {
+                                    <tr>
+                                        <td>@index</td>
+                                        <td>@r.Name</td>
+                                        <td>@r.Email</td>
+                                        <td>@r.Phone</td>
+                                    </tr>
+                                    index++;
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>

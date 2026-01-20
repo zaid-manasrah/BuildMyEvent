@@ -1,0 +1,64 @@
+﻿@model BuildMyEvent.Models.ViewModels.LoginViewModel
+
+@{
+    ViewData["Title"] = "Login";
+}
+
+<section class="py-5" style="min-height: 80vh; background: radial-gradient(circle at top, #f0f4ff 0, #ffffff 55%);">
+    <div class="container h-100">
+        <div class="row justify-content-center align-items-center h-100">
+            <div class="col-lg-5 col-md-7">
+                <div class="card border-0 shadow-lg">
+                    <div class="card-body p-5">
+                        <div class="text-center mb-4">
+                            <div class="mb-2">
+                                <span class="rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 54px; height: 54px; background-color: #eef2ff;">
+                                    <i class="bi bi-person-circle" style="font-size: 1.7rem; color: #4f46e5;"></i>
+                                </span>
+                            </div>
+                            <h1 class="h4 mb-1">Log in to your account</h1>
+                            <p class="text-muted mb-0">Enter your credentials to continue.</p>
+                        </div>
+
+                        @if (!ViewData.ModelState.IsValid && ViewData.ModelState[string.Empty]?.Errors.Any() == true)
+                        {
+                            <div class="alert alert-danger" role="alert">
+                                @foreach (var error in ViewData.ModelState[string.Empty].Errors)
+                                {
+                                    <div>@error.ErrorMessage</div>
+                                }
+                            </div>
+                        }
+
+                        <form asp-action="Login" method="post" novalidate>
+                            <div class="mb-3">
+                                <label asp-for="Email" class="form-label"></label>
+                                <input asp-for="Email" class="form-control form-control-lg" placeholder="you@example.com" />
+                                <span asp-validation-for="Email" class="text-danger small"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Password" class="form-label"></label>
+                                <input asp-for="Password" class="form-control form-control-lg" placeholder="••••••••" />
+                                <span asp-validation-for="Password" class="text-danger small"></span>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">
+                                Log In
+                            </button>
+
+                            <div class="text-center">
+                                <p class="text-muted mb-1">
+                                    Don't have an account?
+                                    <a asp-controller="Account" asp-action="Register">Sign up</a>
+                                </p>
+                            </div>
+                        </form>
+
+                        <partial name="_ValidationScriptsPartial" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

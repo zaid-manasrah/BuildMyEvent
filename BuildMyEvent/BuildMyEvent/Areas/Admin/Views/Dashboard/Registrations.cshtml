@@ -1,0 +1,114 @@
+﻿@model BuildMyEvent.Models.ViewModels.AdminRegistrationsViewModel
+
+@{
+    ViewData["Title"] = "Registrations Management";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Registrations</h1>
+        <p class="text-muted mb-0">View and filter all registrations by event.</p>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Filter</h5>
+    </div>
+    <div class="card-body">
+        <form asp-area="Admin"
+              asp-controller="Dashboard"
+              asp-action="Registrations"
+              method="get"
+              class="row g-3 align-items-end">
+            <div class="col-md-6">
+                <label for="eventId" class="form-label">Event</label>
+                <select id="eventId"
+                        name="eventId"
+                        class="form-select">
+                    <option value="">All events</option>
+                    @foreach (var ev in Model.Events)
+                    {
+                        var selected = Model.SelectedEventId.HasValue && Model.SelectedEventId.Value == ev.Id;
+                        <option value="@ev.Id" selected="@(selected)">
+                            @ev.Name
+                        </option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary w-100">
+                    Apply Filter
+                </button>
+            </div>
+            <div class="col-md-3">
+                <a asp-area="Admin"
+                   asp-controller="Dashboard"
+                   asp-action="Registrations"
+                   class="btn btn-outline-secondary w-100">
+                    Clear
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            Registrations
+            @if (Model.SelectedEventId.HasValue)
+            {
+                var selectedEvent = Model.Events.FirstOrDefault(e => e.Id == Model.SelectedEventId.Value);
+                if (selectedEvent != null)
+                {
+                    <span class="text-muted">for "@selectedEvent.Name"</span>
+                }
+            }
+        </h5>
+        <span class="badge bg-primary">Total: @Model.Registrations.Count</span>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width:5%;">#</th>
+                        <th style="width:25%;">Event</th>
+                        <th style="width:20%;">Name</th>
+                        <th style="width:20%;">Email</th>
+                        <th style="width:15%;">Phone</th>
+                        <th style="width:15%;">Registered At</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Registrations.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-muted">
+                                No registrations found.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        var index = 1;
+                        foreach (var r in Model.Registrations)
+                        {
+                            <tr>
+                                <td>@index</td>
+                                <td>@r.Event?.Name</td>
+                                <td>@r.Name</td>
+                                <td>@r.Email</td>
+                                <td>@r.Phone</td>
+                                <td>@r.RegisteredAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
+                            </tr>
+                            index++;
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,160 @@
+﻿@model BuildMyEvent.Models.ViewModels.AdminDashboardViewModel
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body d-flex align-items-center">
+                <div class="me-3">
+                    <i class="bi bi-people-fill fs-1 text-primary"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-1">Total Users</h6>
+                    <h3 class="mb-0">@Model.TotalUsers</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body d-flex align-items-center">
+                <div class="me-3">
+                    <i class="bi bi-calendar-event fs-1 text-success"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-1">Total Events</h6>
+                    <h3 class="mb-0">@Model.TotalEvents</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body d-flex align-items-center">
+                <div class="me-3">
+                    <i class="bi bi-person-check-fill fs-1 text-warning"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-1">Total Registrations</h6>
+                    <h3 class="mb-0">@Model.TotalRegistrations</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-0">
+                <h5 class="mb-0">Top Templates</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.TopTemplates.Any())
+                {
+                    <table class="table table-sm align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Template</th>
+                                <th class="text-end">Events</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var t in Model.TopTemplates)
+                            {
+                                <tr>
+                                    <td>@t.TemplateKey</td>
+                                    <td class="text-end">@t.Count</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p class="text-muted mb-0">No events yet.</p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-0">
+                <h5 class="mb-0">Latest Events</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.LatestEvents.Any())
+                {
+                    <table class="table table-sm align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Template</th>
+                                <th>Owner Id</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var e in Model.LatestEvents)
+                            {
+                                <tr>
+                                    <td>@e.Name</td>
+                                    <td>@e.TemplateKey</td>
+                                    <td>@e.OwnerUserId</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p class="text-muted mb-0">No events created yet.</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mt-3">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0">
+                <h5 class="mb-0">Latest Registrations</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.LatestRegistrations.Any())
+                {
+                    <table class="table table-sm align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Event</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Registered At (UTC)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var r in Model.LatestRegistrations)
+                            {
+                                <tr>
+                                    <td>@r.Event?.Name</td>
+                                    <td>@r.Name</td>
+                                    <td>@r.Email</td>
+                                    <td>@r.RegisteredAt.ToString("yyyy-MM-dd HH:mm")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p class="text-muted mb-0">No registrations yet.</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>

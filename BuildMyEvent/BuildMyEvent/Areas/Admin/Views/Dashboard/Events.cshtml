@@ -1,0 +1,103 @@
+﻿@model IEnumerable<BuildMyEvent.Models.Event>
+
+@{
+    ViewData["Title"] = "Events Management";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Events</h1>
+        <p class="text-muted mb-0">Manage all events, owners, and registrations.</p>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">All Events</h5>
+        <span class="badge bg-primary">Total: @Model.Count()</span>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width:5%;">#</th>
+                        <th style="width:25%;">Name</th>
+                        <th style="width:15%;">Owner</th>
+                        <th style="width:15%;">Template</th>
+                        <th style="width:10%;">Registrations</th>
+                        <th style="width:15%;">Slug</th>
+                        <th style="width:15%;" class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-muted">
+                                No events found.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        var index = 1;
+                        foreach (var ev in Model)
+                        {
+                            <tr>
+                                <td>@index</td>
+                                <td>@ev.Name</td>
+                                <td>
+                                    @if (ev.OwnerUser != null)
+                                    {
+                                        @ev.OwnerUser.Name
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">No owner</span>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="badge bg-info text-dark">@ev.TemplateKey</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">
+                                        @(ev.Registrations?.Count ?? 0)
+                                    </span>
+                                </td>
+                                <td>
+                                    <code>@ev.Slug</code>
+                                </td>
+                                <td class="text-end">
+                                    <a class="btn btn-sm btn-outline-primary"
+                                       asp-area=""
+                                       asp-controller="Events"
+                                       asp-action="Details"
+                                       asp-route-slug="@ev.Slug"
+                                       target="_blank">
+                                        View
+                                    </a>
+
+                                    <form asp-area="Admin"
+                                          asp-controller="Dashboard"
+                                          asp-action="DeleteEvent"
+                                          method="post"
+                                          class="d-inline"
+                                          onsubmit="return confirm('Are you sure you want to permanently delete this event and all its registrations?');">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@ev.Id" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger ms-1">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            index++;
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,506 @@
+﻿@using Microsoft.AspNetCore.Http
+
+@{
+    ViewData["Title"] = "Home";
+
+    int? currentUserId = Context.Session.GetInt32("CurrentUserId");
+    bool isLoggedIn = currentUserId.HasValue;
+
+    var sectionFromQuery = Context.Request.Query["section"].ToString();
+}
+
+
+<div id="successMessage" class="success-message"></div>
+
+<div id="page-root" data-is-logged-in="@isLoggedIn.ToString().ToLower()"></div>
+
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" asp-controller="Home" asp-action="Index">BuildMyEvent</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto" id="navbar-links">
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="showSection('home')">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="showSection('templates')">Templates</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="showSection('create-by-ai')">AI Builder</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="showSection('get-started')">Get Started</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="showSection('faq')">FAQ</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="showSection('contact-us')">Contact</a>
+                </li>
+
+                @if (isLoggedIn)
+                {
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="profileDropdownHome" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            Profile
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdownHome">
+                            <li>
+                                <a class="dropdown-item" href="@Url.Action("Profile", "Account")">My Profile</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="@Url.Action("MyEvents", "Events")">My Events</a>
+                            </li>
+                            <li><hr class="dropdown-divider" /></li>
+                            <li>
+                                <a class="dropdown-item" href="@Url.Action("Logout", "Account")">Logout</a>
+                            </li>
+                        </ul>
+                    </li>
+                }
+                else
+                {
+                    <li class="nav-item">
+                        <a class="btn btn-outline-light ms-2" href="@Url.Action("Login", "Account")">Login</a>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<section class="section active" id="home">
+    <div class="hero">
+        <h1 class="animate__animated animate__fadeInDown">Welcome to BuildMyEvent</h1>
+        <p class="lead typing-text" id="typing-animation-home"></p>
+        <a href="#" class="btn btn-primary btn-lg mt-4"
+           style="padding: 12px 30px; font-size: 1.2rem;"
+           onclick="handleStartNow()">Start Building Now</a>
+    </div>
+
+    <div class="py-5 bg-light">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body d-flex flex-column flex-md-row align-items-md-center justify-content-between">
+                            <div class="mb-3 mb-md-0">
+                                <h2 class="h5 mb-1">Create your own event page</h2>
+                                <p class="text-muted mb-0">
+                                    Login or register for free, choose a template, customize it, and publish a shareable event page in minutes.
+                                </p>
+                            </div>
+                            <div class="d-flex gap-2">
+                                @if (isLoggedIn)
+                                {
+                                    <a asp-controller="Events" asp-action="MyEvents" class="btn btn-primary">
+                                        Go to My Events
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a asp-controller="Account" asp-action="Login" class="btn btn-primary">
+                                        Login
+                                    </a>
+                                    <a asp-controller="Account" asp-action="Register" class="btn btn-outline-primary">
+                                        Register
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="welcome-section">
+        <div class="container">
+            <h2>Create Stunning Conference Websites</h2>
+            <p class="w-75 mx-auto">
+                BuildMyEvent is your ultimate platform to create professional and stunning conference websites with ease.
+                Whether you're organizing a small workshop or a large-scale conference, our intuitive tools and templates
+                will help you promote your event, manage registrations, and engage with attendees effectively.
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="section" id="templates">
+    <div class="container py-5">
+        <h2 class="text-center mb-5">Choose Your Template</h2>
+        <p class="text-center mb-5 w-75 mx-auto">
+            Select from our professionally designed templates to create a website that matches your event's branding.
+        </p>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card h-100" id="template-tech-pro">
+                    <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+                         class="card-img-top" alt="Tech Pro">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">Tech Pro</h5>
+                        <p class="card-text">Modern design perfect for technology conferences and hackathons.</p>
+                        <a href="#" class="btn btn-primary mt-auto" onclick="handleTemplateSelect('tech-pro')">Select Template</a>
+                        <a href="@Url.Action("PreviewTemplate", "Events", new { templateKey = "tech-pro" })"
+                           target="_blank" class="btn btn-outline-secondary mt-2">Preview</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100" id="template-creative-spark">
+                    <img src="https://images.unsplash.com/photo-1492681290082-e932832941e6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+                         class="card-img-top" alt="Creative Spark">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">Creative Spark</h5>
+                        <p class="card-text">Vibrant template perfect for creative events and workshops.</p>
+                        <a href="#" class="btn btn-primary mt-auto" onclick="handleTemplateSelect('creative-spark')">Select Template</a>
+                        <a href="@Url.Action("PreviewTemplate", "Events", new { templateKey = "creative-spark" })"
+                           target="_blank" class="btn btn-outline-secondary mt-2">Preview</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100" id="template-business-elite">
+                    <img src="https://images.unsplash.com/photo-1431540015161-0bf868a2d407?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+                         class="card-img-top" alt="Business Elite">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">Business Elite</h5>
+                        <p class="card-text">Professional design for corporate conferences and meetings.</p>
+                        <a href="#" class="btn btn-primary mt-auto" onclick="handleTemplateSelect('business-elite')">Select Template</a>
+                        <a href="@Url.Action("PreviewTemplate", "Events", new { templateKey = "business-elite" })"
+                           target="_blank" class="btn btn-outline-secondary mt-2">Preview</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100" id="template-minimalist">
+                    <img src="https://images.unsplash.com/photo-1511578314322-379afb476865?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+                         class="card-img-top" alt="Minimalist">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">Minimalist</h5>
+                        <p class="card-text">Clean and simple design for focused events.</p>
+                        <a href="#" class="btn btn-primary mt-auto" onclick="handleTemplateSelect('minimalist')">Select Template</a>
+                        <a href="@Url.Action("PreviewTemplate", "Events", new { templateKey = "minimalist" })"
+                           target="_blank" class="btn btn-outline-secondary mt-2">Preview</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100" id="template-colorful">
+                    <img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+                         class="card-img-top" alt="Colorful">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">Colorful</h5>
+                        <p class="card-text">Bright and engaging template for fun events.</p>
+                        <a href="#" class="btn btn-primary mt-auto" onclick="handleTemplateSelect('colorful')">Select Template</a>
+                        <a href="@Url.Action("PreviewTemplate", "Events", new { templateKey = "colorful" })"
+                           target="_blank" class="btn btn-outline-secondary mt-2">Preview</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100" id="template-academic">
+                    <img src="https://images.unsplash.com/photo-1505373877841-8d25f7d46678?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+                         class="card-img-top" alt="Academic">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">Academic</h5>
+                        <p class="card-text">Formal design for academic conferences and seminars.</p>
+                        <a href="#" class="btn btn-primary mt-auto" onclick="handleTemplateSelect('academic')">Select Template</a>
+                        <a href="@Url.Action("PreviewTemplate", "Events", new { templateKey = "academic" })"
+                           target="_blank" class="btn btn-outline-secondary mt-2">Preview</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section" id="create-by-ai">
+    <div class="container py-5">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h2 class="mb-4">AI-Powered Event Website Builder</h2>
+                <p class="mb-4">
+                    Our advanced AI technology can generate a complete conference website in minutes,
+                    tailored to your specific needs.
+                </p>
+                <ul class="list-unstyled">
+                    <li class="mb-3"><i class="bi bi-check-circle-fill text-primary me-2"></i> Automatic content generation</li>
+                    <li class="mb-3"><i class="bi bi-check-circle-fill text-primary me-2"></i> Smart layout suggestions</li>
+                    <li class="mb-3"><i class="bi bi-check-circle-fill text-primary me-2"></i> Personalized design recommendations</li>
+                    <li class="mb-3"><i class="bi bi-check-circle-fill text-primary me-2"></i> SEO optimization</li>
+                </ul>
+                <a href="#" class="btn btn-primary btn-lg" onclick="handleOpenAiBuilder()">Try AI Builder Now</a>
+
+            </div>
+            <div class="col-lg-6">
+                <img src="https://images.unsplash.com/photo-1655720828013-2236d7fcc539?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+                     alt="AI Technology" class="img-fluid rounded shadow">
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section" id="get-started">
+    <div class="container py-5">
+        <h2 class="text-center mb-5">Get Started in 4 Easy Steps</h2>
+        <div class="row">
+            <div class="col-md-3 text-center mb-4">
+                <div class="bg-primary text-white rounded-circle p-4 mx-auto mb-3"
+                     style="width: 100px; height: 100px; display: flex; align-items: center; justify-content: center;">
+                    <h3 class="m-0">1</h3>
+                </div>
+                <h4>Create Account</h4>
+                <p>Sign up for free in just 30 seconds</p>
+            </div>
+            <div class="col-md-3 text-center mb-4">
+                <div class="bg-primary text-white rounded-circle p-4 mx-auto mb-3"
+                     style="width: 100px; height: 100px; display: flex; align-items: center; justify-content: center;">
+                    <h3 class="m-0">2</h3>
+                </div>
+                <h4>Choose Template</h4>
+                <p>Select from our beautiful designs</p>
+            </div>
+            <div class="col-md-3 text-center mb-4">
+                <div class="bg-primary text-white rounded-circle p-4 mx-auto mb-3"
+                     style="width: 100px; height: 100px; display: flex; align-items: center; justify-content: center;">
+                    <h3 class="m-0">3</h3>
+                </div>
+                <h4>Customize</h4>
+                <p>Add your content and branding</p>
+            </div>
+            <div class="col-md-3 text-center mb-4">
+                <div class="bg-primary text-white rounded-circle p-4 mx-auto mb-3"
+                     style="width: 100px; height: 100px; display: flex; align-items: center; justify-content: center;">
+                    <h3 class="m-0">4</h3>
+                </div>
+                <h4>Publish</h4>
+                <p>Go live with one click</p>
+            </div>
+        </div>
+        <div class="text-center mt-4">
+            <a href="#" class="btn btn-primary btn-lg px-5" onclick="handleStartNow()">Start Now</a>
+        </div>
+    </div>
+</section>
+
+<section class="section" id="faq">
+    <div class="container py-5">
+        <h2 class="text-center mb-5">Frequently Asked Questions</h2>
+        <div class="accordion" id="faqAccordion">
+            <div class="accordion-item mb-3 border-0 shadow-sm">
+                <h2 class="accordion-header" id="headingOne">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseOne">
+                        How much does it cost to create a conference website?
+                    </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        BuildMyEvent offers a range of pricing plans to suit different needs. We have a free plan with basic features,
+                        a Pro plan with advanced functionality, and an Enterprise plan with custom pricing for large events.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item mb-3 border-0 shadow-sm">
+                <h2 class="accordion-header" id="headingTwo">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseTwo">
+                        Can I use my own domain name?
+                    </button>
+                </h2>
+                <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Yes! All our paid plans allow you to connect your own custom domain name. We also provide SSL certificates
+                        for all websites to ensure they are secure.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item mb-3 border-0 shadow-sm">
+                <h2 class="accordion-header" id="headingThree">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseThree">
+                        Do you support online registration and payments?
+                    </button>
+                </h2>
+                <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Our platform can be integrated with popular payment processors like Stripe and PayPal to handle ticket sales and payments.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item mb-3 border-0 shadow-sm">
+                <h2 class="accordion-header" id="headingFour">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseFour">
+                        How does the AI website builder work?
+                    </button>
+                </h2>
+                <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Our AI builder asks you a few simple questions about your event (type, size, audience, etc.) and then generates
+                        a complete website with relevant content, layout, and design suggestions. You can then customize it further as needed.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section" id="contact-us">
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-lg-6 mb-5 mb-lg-0">
+                <h2 class="mb-4">Get in Touch</h2>
+                <p class="mb-4">We'd love to hear from you! Send us a message and we'll respond as soon as possible.</p>
+                <div class="contact-info mb-4">
+                    <h4 class="mb-3">Contact Information</h4>
+                    <p><i class="bi bi-envelope me-2"></i> info@buildmyevent.com</p>
+                    <p><i class="bi bi-phone me-2"></i> +1 (555) 123-4567</p>
+                    <p><i class="bi bi-geo-alt me-2"></i> 123 Event Street, Conference City</p>
+                </div>
+                <div class="social-links">
+                    <h4 class="mb-3">Follow Us</h4>
+                    <a href="#" class="me-3 text-primary"><i class="bi bi-facebook" style="font-size: 1.5rem;"></i></a>
+                    <a href="#" class="me-3 text-primary"><i class="bi bi-twitter" style="font-size: 1.5rem;"></i></a>
+                    <a href="#" class="me-3 text-primary"><i class="bi bi-linkedin" style="font-size: 1.5rem;"></i></a>
+                    <a href="#" class="me-3 text-primary"><i class="bi bi-instagram" style="font-size: 1.5rem;"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <form class="contact-form" id="contact-form">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Your Name</label>
+                        <input type="text" class="form-control" id="name" placeholder="Enter your name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="email" placeholder="Enter your email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="subject" class="form-label">Subject</label>
+                        <input type="text" class="form-control" id="subject" placeholder="Subject of your message">
+                    </div>
+                    <div class="mb-3">
+                        <label for="message" class="form-label">Message</label>
+                        <textarea class="form-control" id="message" rows="4" placeholder="Write your message here" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        Send Message
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section" id="customize-template">
+    <div class="container py-5">
+        <h2 class="text-center mb-5">Customize Your Conference</h2>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <form id="customize-form" asp-controller="Events" asp-action="Create" method="post">
+                    <input type="hidden" id="template-key" name="TemplateKey" value="default" />
+                    <div class="mb-3">
+                        <label for="event-name" class="form-label">Conference Name</label>
+                        <input type="text" class="form-control" id="event-name" name="Name"
+                               placeholder="Enter conference name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="event-description" class="form-label">Description</label>
+                        <textarea class="form-control" id="event-description" name="Description" rows="4"
+                                  placeholder="Describe your conference" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="event-logo" class="form-label">Upload Logo</label>
+                        <input type="file" class="form-control" id="event-logo" name="LogoFileName" accept="image/*">
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Create Conference Website</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div id="chatbot" class="chatbot-container">
+    <div id="chatbot-header" class="chatbot-header">
+        AI Builder Assistant
+    </div>
+    <div id="chatbot-body" class="chatbot-body">
+        <div id="chatbot-messages"></div>
+        <input type="text" id="chatbot-input" class="chatbot-input" placeholder="Ask me anything...">
+    </div>
+</div>
+
+
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-4 mb-md-0">
+                <h5 class="mb-3">BuildMyEvent</h5>
+                <p>The easiest way to create professional conference websites. Perfect for event organizers of all sizes.</p>
+            </div>
+            <div class="col-md-2 mb-4 mb-md-0">
+                <h5 class="mb-3">Quick Links</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="#" onclick="showSection('home')">Home</a></li>
+                    <li class="mb-2"><a href="#" onclick="showSection('templates')">Templates</a></li>
+                    <li class="mb-2"><a href="#" onclick="showSection('contact-us')">Contact</a></li>
+                </ul>
+            </div>
+
+            <div class="col-md-4">
+                <h5 class="mb-3">Newsletter</h5>
+                <p>Subscribe to get updates and event planning tips.</p>
+                <div class="input-group mb-3">
+                    <input type="email" class="form-control" placeholder="Your email">
+                    <button class="btn btn-primary" type="button">Subscribe</button>
+                </div>
+            </div>
+        </div>
+        <hr class="my-4 bg-secondary">
+        <div class="row">
+            <div class="col-md-6 text-center text-md-start">
+                <p class="mb-0">&copy; 2025 BuildMyEvent. All rights reserved.</p>
+            </div>
+            <div class="col-md-6 text-center text-md-end">
+                <a href="#" class="text-white me-3"><i class="bi bi-facebook"></i></a>
+                <a href="#" class="text-white me-3"><i class="bi bi-twitter"></i></a>
+                <a href="#" class="text-white me-3"><i class="bi bi-linkedin"></i></a>
+                <a href="#" class="text-white"><i class="bi bi-instagram"></i></a>
+            </div>
+        </div>
+    </div>
+</footer>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var defaultSection = 'home';
+
+        if (window.location.hash) {
+            var hash = window.location.hash.substring(1);
+            if (hash) {
+                defaultSection = hash;
+            }
+        }
+
+        showSection(defaultSection);
+    });
+</script>
+
+

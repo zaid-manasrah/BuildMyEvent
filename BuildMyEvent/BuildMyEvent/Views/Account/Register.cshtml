@@ -1,0 +1,96 @@
+﻿@model BuildMyEvent.Models.ViewModels.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+<section class="py-5" style="min-height: 100vh; background: radial-gradient(circle at top left, #4f46e5 0, #060b26 45%, #020617 100%);">
+    <div class="container h-100">
+        <div class="row justify-content-center align-items-center h-100">
+            <div class="col-lg-9">
+                <div class="card border-0 shadow-xl overflow-hidden">
+                    <div class="row g-0">
+                        <div class="col-lg-5 d-none d-lg-flex flex-column justify-content-between text-white p-4" style="background: linear-gradient(160deg, #22c55e 0%, #4ade80 35%, #4f46e5 100%);">
+                            <div>
+                                <h2 class="h4 mb-3">Create your BuildMyEvent account</h2>
+                                <p class="mb-4">
+                                    Launch beautiful event pages, share them with your audience, and collect registrations with ease.
+                                </p>
+                            </div>
+                            <div class="mt-auto">
+                                <h6 class="text-uppercase text-white-50 mb-2">Already a member?</h6>
+                                <p class="mb-2">Log in to access your dashboard and existing events.</p>
+                                <a asp-controller="Account" asp-action="Login" class="btn btn-outline-light btn-sm">
+                                    Log in instead
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-7">
+                            <div class="p-5">
+                                <div class="text-center mb-4">
+                                    <div class="mb-2">
+                                        <span class="rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 54px; height: 54px; background-color: #ecfdf3;">
+                                            <i class="bi bi-stars" style="font-size: 1.7rem; color: #16a34a;"></i>
+                                        </span>
+                                    </div>
+                                    <h1 class="h4 mb-1">Sign up in seconds</h1>
+                                    <p class="text-muted mb-0">Fill in your details to get started.</p>
+                                </div>
+
+                                @if (!ViewData.ModelState.IsValid && ViewData.ModelState[string.Empty]?.Errors.Any() == true)
+                                {
+                                    <div class="alert alert-danger" role="alert">
+                                        @foreach (var error in ViewData.ModelState[string.Empty].Errors)
+                                        {
+                                            <div>@error.ErrorMessage</div>
+                                        }
+                                    </div>
+                                }
+
+                                <form asp-action="Register" method="post" novalidate>
+                                    <div class="mb-3">
+                                        <label asp-for="Name" class="form-label"></label>
+                                        <input asp-for="Name" class="form-control form-control-lg" placeholder="Your full name" />
+                                        <span asp-validation-for="Name" class="text-danger small"></span>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label asp-for="Email" class="form-label"></label>
+                                        <input asp-for="Email" class="form-control form-control-lg" placeholder="you@example.com" />
+                                        <span asp-validation-for="Email" class="text-danger small"></span>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label asp-for="Password" class="form-label"></label>
+                                        <input asp-for="Password" class="form-control form-control-lg" placeholder="Choose a strong password" />
+                                        <span asp-validation-for="Password" class="text-danger small"></span>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label asp-for="ConfirmPassword" class="form-label"></label>
+                                        <input asp-for="ConfirmPassword" class="form-control form-control-lg" placeholder="Repeat your password" />
+                                        <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">
+                                        Sign Up
+                                    </button>
+
+                                    <div class="text-center">
+                                        <p class="text-muted mb-1">
+                                            Already have an account?
+                                            <a asp-controller="Account" asp-action="Login">Log in</a>
+                                        </p>
+                                    </div>
+                                </form>
+
+                                <partial name="_ValidationScriptsPartial" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

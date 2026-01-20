@@ -1,0 +1,25 @@
+﻿@{
+    ViewData["Title"] = "Registration Complete";
+    var eventName = ViewBag.EventName as string ?? "Event";
+}
+
+<section id="event-thanks" class="py-5" style="min-height: 70vh; background: linear-gradient(135deg, #f8f9ff 0%, #f1f3f5 50%, #ffffff 100%);">
+    <div class="container d-flex align-items-center justify-content-center h-100">
+        <div class="col-lg-7 col-md-9">
+            <div class="card border-0 shadow-lg">
+                <div class="card-body p-5 text-center">
+                    <div class="mb-4"> <div class="rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px; background-color: #e8f5e9;"> <i class="bi bi-check2-circle" style="font-size: 2.5rem; color: #198754;"></i> </div> </div> <h1 class="h3 mb-3">Thank you for registering!</h1> <p class="mb-1 text-muted"> You have successfully registered for <span class="fw-semibold">@eventName</span>. </p> <p class="text-muted mb-4"> A confirmation email has been sent to the address you provided. Please check your inbox for event details and updates. </p>
+                    text
+                    <div class="d-flex flex-column flex-sm-row justify-content-center gap-2">
+                        
+                        <a asp-controller="Home"
+                           asp-action="Index"
+                           class="btn btn-outline-secondary px-4">
+                            Back to home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

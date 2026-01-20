@@ -1,0 +1,793 @@
+﻿@model BuildMyEvent.Models.Event
+@using Microsoft.AspNetCore.Http
+
+@{
+    ViewData["Title"] = Model.Name;
+    bool isOwner = ViewBag.IsOwner != null && (bool)ViewBag.IsOwner;
+
+    int? currentUserId = Context.Session.GetInt32("CurrentUserId");
+    bool canEdit = currentUserId.HasValue && Model.OwnerUserId == currentUserId.Value;
+
+    int registrationsCount = ViewBag.RegistrationsCount is int c ? c : 0;
+
+    // --- Tech Pro Variables ---
+    string whyAttendTitle = string.IsNullOrWhiteSpace(Model.TechProWhyAttendTitle) ? "Why attend?" : Model.TechProWhyAttendTitle;
+    string whyAttendPoint1 = string.IsNullOrWhiteSpace(Model.TechProWhyAttendPoint1) ? "Latest trends in software, AI, and cloud" : Model.TechProWhyAttendPoint1;
+    string whyAttendPoint2 = string.IsNullOrWhiteSpace(Model.TechProWhyAttendPoint2) ? "Network with engineers and founders" : Model.TechProWhyAttendPoint2;
+    string whyAttendPoint3 = string.IsNullOrWhiteSpace(Model.TechProWhyAttendPoint3) ? "Live demos and hands-on sessions" : Model.TechProWhyAttendPoint3;
+    string card1Title = string.IsNullOrWhiteSpace(Model.TechProCard1Title) ? "For technology leaders" : Model.TechProCard1Title;
+    string card1Body = string.IsNullOrWhiteSpace(Model.TechProCard1Body) ? "Perfect for CTOs, engineering managers, and team leads who want to stay ahead of the curve and bring new ideas to their teams." : Model.TechProCard1Body;
+    string card2Title = string.IsNullOrWhiteSpace(Model.TechProCard2Title) ? "For developers & engineers" : Model.TechProCard2Title;
+    string card2Body = string.IsNullOrWhiteSpace(Model.TechProCard2Body) ? "Deep-dive technical talks, live coding sessions, and real-world case studies from top companies and startups." : Model.TechProCard2Body;
+    string card3Title = string.IsNullOrWhiteSpace(Model.TechProCard3Title) ? "Share with your team" : Model.TechProCard3Title;
+    string card3Body = string.IsNullOrWhiteSpace(Model.TechProCard3Body) ? "Invite your colleagues and build a shared vision for the future of your tech organization." : Model.TechProCard3Body;
+
+    // --- Creative Spark Variables ---
+    string creativeHeroTitle = string.IsNullOrWhiteSpace(Model.CreativeHeroTitle) ? Model.Name : Model.CreativeHeroTitle;
+    string creativeHeroSubtitle = string.IsNullOrWhiteSpace(Model.CreativeHeroSubtitle) ? Model.Description : Model.CreativeHeroSubtitle;
+    string creativeCtaText = string.IsNullOrWhiteSpace(Model.CreativeCtaText) ? "Join This Creative Event" : Model.CreativeCtaText;
+    string creativeShareTitle = string.IsNullOrWhiteSpace(Model.CreativeShareTitle) ? "Share this link" : Model.CreativeShareTitle;
+
+    // --- Business Elite Variables ---
+    string businessHeroBadge = string.IsNullOrWhiteSpace(Model.BusinessHeroBadge) ? "Executive Conference" : Model.BusinessHeroBadge;
+    string businessHeroTitle = string.IsNullOrWhiteSpace(Model.BusinessHeroTitle) ? Model.Name : Model.BusinessHeroTitle;
+    string businessHeroSubtitle = string.IsNullOrWhiteSpace(Model.BusinessHeroSubtitle) ? Model.Description : Model.BusinessHeroSubtitle;
+    string businessCtaText = string.IsNullOrWhiteSpace(Model.BusinessCtaText) ? "Request Your Seat" : Model.BusinessCtaText;
+    string businessCard1Title = string.IsNullOrWhiteSpace(Model.BusinessCard1Title) ? "For C‑Level Executives" : Model.BusinessCard1Title;
+    string businessCard1Body = string.IsNullOrWhiteSpace(Model.BusinessCard1Body) ? "Strategic sessions focused on growth, innovation, and digital transformation for executive leaders." : Model.BusinessCard1Body;
+    string businessCard2Title = string.IsNullOrWhiteSpace(Model.BusinessCard2Title) ? "For Business Leaders" : Model.BusinessCard2Title;
+    string businessCard2Body = string.IsNullOrWhiteSpace(Model.BusinessCard2Body) ? "Actionable insights for heads of departments and decision makers driving organizational change." : Model.BusinessCard2Body;
+    string businessCard3Title = string.IsNullOrWhiteSpace(Model.BusinessCard3Title) ? "For Partners & Sponsors" : Model.BusinessCard3Title;
+    string businessCard3Body = string.IsNullOrWhiteSpace(Model.BusinessCard3Body) ? "Premium networking opportunities with executives and decision makers from leading organizations." : Model.BusinessCard3Body;
+    string businessShareTitle = string.IsNullOrWhiteSpace(Model.BusinessShareTitle) ? "Share this event with your leadership team" : Model.BusinessShareTitle;
+
+    // --- Minimalist Variables ---
+    string minimalHeroTitle = string.IsNullOrWhiteSpace(Model.MinimalHeroTitle) ? Model.Name : Model.MinimalHeroTitle;
+    string minimalHeroSubtitle = string.IsNullOrWhiteSpace(Model.MinimalHeroSubtitle) ? Model.Description : Model.MinimalHeroSubtitle;
+    string minimalCtaText = string.IsNullOrWhiteSpace(Model.MinimalCtaText) ? "Register" : Model.MinimalCtaText;
+    string minimalInfoTitle = string.IsNullOrWhiteSpace(Model.MinimalInfoTitle) ? "About this conference" : Model.MinimalInfoTitle;
+    string minimalInfoBody = string.IsNullOrWhiteSpace(Model.MinimalInfoBody) ? "A focused event with a minimal, distraction-free experience for attendees." : Model.MinimalInfoBody;
+
+    // --- Colorful Variables ---
+    string colorfulHeroTitle = string.IsNullOrWhiteSpace(Model.ColorfulHeroTitle) ? Model.Name : Model.ColorfulHeroTitle;
+    string colorfulHeroSubtitle = string.IsNullOrWhiteSpace(Model.ColorfulHeroSubtitle) ? Model.Description : Model.ColorfulHeroSubtitle;
+    string colorfulCtaText = string.IsNullOrWhiteSpace(Model.ColorfulCtaText) ? "Join the Experience" : Model.ColorfulCtaText;
+    string colorfulHighlight1 = string.IsNullOrWhiteSpace(Model.ColorfulHighlight1) ? "Live performances & interactive sessions" : Model.ColorfulHighlight1;
+    string colorfulHighlight2 = string.IsNullOrWhiteSpace(Model.ColorfulHighlight2) ? "Vibrant community and networking" : Model.ColorfulHighlight2;
+    string colorfulHighlight3 = string.IsNullOrWhiteSpace(Model.ColorfulHighlight3) ? "Creative workshops and showcases" : Model.ColorfulHighlight3;
+
+    // --- Academic Variables ---
+    string academicHeroTitle = string.IsNullOrWhiteSpace(Model.AcademicHeroTitle) ? Model.Name : Model.AcademicHeroTitle;
+    string academicHeroSubtitle = string.IsNullOrWhiteSpace(Model.AcademicHeroSubtitle) ? Model.Description : Model.AcademicHeroSubtitle;
+    string academicCtaText = string.IsNullOrWhiteSpace(Model.AcademicCtaText) ? "Submit Your Paper" : Model.AcademicCtaText;
+    string academicTrack1Title = string.IsNullOrWhiteSpace(Model.AcademicTrack1Title) ? "Research Track" : Model.AcademicTrack1Title;
+    string academicTrack1Body = string.IsNullOrWhiteSpace(Model.AcademicTrack1Body) ? "Peer-reviewed research presentations from universities and research institutes." : Model.AcademicTrack1Body;
+    string academicTrack2Title = string.IsNullOrWhiteSpace(Model.AcademicTrack2Title) ? "Industry Track" : Model.AcademicTrack2Title;
+    string academicTrack2Body = string.IsNullOrWhiteSpace(Model.AcademicTrack2Body) ? "Applied research and case studies from industry practitioners." : Model.AcademicTrack2Body;
+    string academicTrack3Title = string.IsNullOrWhiteSpace(Model.AcademicTrack3Title) ? "Workshops & Tutorials" : Model.AcademicTrack3Title;
+    string academicTrack3Body = string.IsNullOrWhiteSpace(Model.AcademicTrack3Body) ? "Hands-on tutorials and workshops led by experts." : Model.AcademicTrack3Body;
+    string academicShareTitle = string.IsNullOrWhiteSpace(Model.AcademicShareTitle) ? "Share this conference with your colleagues and students" : Model.AcademicShareTitle;
+
+    string publicLink = $"{Context.Request.Scheme}://{Context.Request.Host}/Events/Details/{Model.Slug}";
+}
+
+@if (Model.TemplateKey == "tech-pro")
+{
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color:#020617;" id="top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#top">@Model.Name</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#eventNavTechPro">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="eventNavTechPro">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#top-hero">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#why-attend">Why attend</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#audience-cards">Who is this for</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#registration-section">Registration</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section id="event-details-tech-pro" style="background-color: #0f172a; color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+        <div id="top-hero" class="position-relative py-5" style="background: linear-gradient(rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.8)), url('https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat; border-bottom: 1px solid #1e293b;">
+            <div class="container py-5">
+                <div class="row align-items-center">
+                    <div class="col-lg-7 mb-4 mb-lg-0">
+                        <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 mb-3 px-3 py-2 rounded-pill">
+                            Tech Conference
+                        </span>
+                        <h1 class="display-4 fw-bold mb-3 text-white" style="text-shadow: 0 0 20px rgba(56,189,248,0.3);">
+                            @Model.Name
+                        </h1>
+                        <p class="lead text-gray-300 mb-3" style="color: #cbd5e1;">@Model.Description</p>
+
+                        @if (isOwner)
+                        {
+                            <div class="alert alert-info d-inline-flex align-items-center py-2 px-3 mb-3" role="alert">
+                                <i class="bi bi-people me-2"></i>
+                                <span>Registrations: <strong>@registrationsCount</strong></span>
+                                <a asp-controller="Events"
+                                   asp-action="Attendees"
+                                   asp-route-id="@Model.Id"
+                                   class="btn btn-sm btn-outline-primary ms-3">
+                                    View attendees
+                                </a>
+                            </div>
+                        }
+
+                        <div class="d-flex flex-wrap align-items-center gap-3 mt-2">
+                            <a class="btn btn-info btn-lg px-5 fw-semibold"
+                               href="@Url.Action("Register", "Registrations", new { slug = Model.Slug })"
+                               style="background-color: #0ea5e9; border: none; box-shadow: 0 0 15px rgba(14, 165, 233, 0.4);">
+                                Register Now
+                            </a>
+                            @if (isOwner)
+                            {
+                                <a class="btn btn-outline-light btn-lg px-4"
+                                   href="@Url.Action("Edit", "Events", new { id = Model.Id })">
+                                    Edit Event
+                                </a>
+                            }
+                        </div>
+
+                        <div class="mt-4 p-3 rounded"
+                             style="background: rgba(30, 41, 59, 0.5); border: 1px solid #334155; display: inline-block;">
+                            <small class="text-muted d-block mb-1">Public Share Link:</small>
+                            <code class="text-info">@publicLink</code>
+                        </div>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="card bg-dark border-0 shadow-lg"
+                             style="background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1);">
+                            <div class="card-body p-4" id="why-attend">
+                                <h4 class="card-title mb-4 text-white">@whyAttendTitle</h4>
+                                <ul class="list-unstyled mb-0">
+                                    <li class="mb-3 d-flex align-items-center text-light">
+                                        <i class="bi bi-cpu fs-5 me-3 text-info"></i>
+                                        <span>@whyAttendPoint1</span>
+                                    </li>
+                                    <li class="mb-3 d-flex align-items-center text-light">
+                                        <i class="bi bi-people fs-5 me-3 text-info"></i>
+                                        <span>@whyAttendPoint2</span>
+                                    </li>
+                                    <li class="d-flex align-items-center text-light">
+                                        <i class="bi bi-lightning-charge fs-5 me-3 text-info"></i>
+                                        <span>@whyAttendPoint3</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container py-5" id="audience-cards">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card h-100 border-0" style="background: #1e293b; color: #e2e8f0;">
+                        <div class="card-body p-4">
+                            <div class="mb-3 text-info"><i class="bi bi-shield-check fs-2"></i></div>
+                            <h5 class="card-title fw-bold text-white mb-3">@card1Title</h5>
+                            <p class="card-text small text-secondary">@card1Body</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0" style="background: #1e293b; color: #e2e8f0;">
+                        <div class="card-body p-4">
+                            <div class="mb-3 text-info"><i class="bi bi-code-slash fs-2"></i></div>
+                            <h5 class="card-title fw-bold text-white mb-3">@card2Title</h5>
+                            <p class="card-text small text-secondary">@card2Body</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0" style="background: #1e293b; color: #e2e8f0;">
+                        <div class="card-body p-4">
+                            <div class="mb-3 text-info"><i class="bi bi-share fs-2"></i></div>
+                            <h5 class="card-title fw-bold text-white mb-3">@card3Title</h5>
+                            <p class="card-text small text-secondary">@card3Body</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container pb-5" id="registration-section">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h2 class="h4 mb-3">Ready to join?</h2>
+                    <p class="text-muted mb-4">
+                        Secure your seat now and receive all the event details by email.
+                    </p>
+                    <a class="btn btn-info btn-lg px-5 fw-semibold"
+                       href="@Url.Action("Register", "Registrations", new { slug = Model.Slug })">
+                        Go to registration form
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+}
+
+else if (Model.TemplateKey == "creative-spark")
+{
+    <nav class="navbar navbar-expand-lg navbar-dark"
+         style="background: linear-gradient(90deg,#ec4899,#a855f7);" id="top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#top">@Model.Name</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#eventNavCreative">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="eventNavCreative">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#creative-hero">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#creative-experience">Experience</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#creative-share">Share</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section id="event-details-creative" style="background-color: #fff; font-family: 'Poppins', sans-serif;">
+        <div id="creative-hero"
+             class="position-relative py-5 text-white"
+             style="background: linear-gradient(135deg, rgba(236, 72, 153, 0.9), rgba(168, 85, 247, 0.9)),
+                         url('https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&w=1920&q=80')
+                         center/cover fixed;">
+            <div class="container py-5">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <span class="badge bg-white text-dark mb-4 px-3 py-2 text-uppercase fw-bold rounded-0"
+                              style="letter-spacing: 2px;">Creative Experience</span>
+                        <h1 class="display-3 fw-bold mb-3">@creativeHeroTitle</h1>
+                        <p class="lead mb-3 opacity-75 fs-4">@creativeHeroSubtitle</p>
+
+                        @if (isOwner)
+                        {
+                            <div class="alert alert-info d-inline-flex align-items-center py-2 px-3 mb-3 bg-opacity-75" role="alert">
+                                <i class="bi bi-people me-2"></i>
+                                <span>Registrations: <strong>@registrationsCount</strong></span>
+                                <a asp-controller="Events"
+                                   asp-action="Attendees"
+                                   asp-route-id="@Model.Id"
+                                   class="btn btn-sm btn-outline-light ms-3">
+                                    View attendees
+                                </a>
+                            </div>
+                        }
+
+                        <div class="d-flex flex-wrap gap-3 mt-2">
+                            <a class="btn btn-light btn-lg px-5 rounded-pill fw-bold text-primary shadow"
+                               href="@Url.Action("Register", "Registrations", new { slug = Model.Slug })">
+                                @creativeCtaText
+                            </a>
+                            @if (isOwner)
+                            {
+                                <a class="btn btn-outline-light btn-lg px-4 rounded-pill fw-bold"
+                                   href="@Url.Action("Edit", "Events", new { id = Model.Id })">
+                                    Edit Event
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="position: absolute; bottom: -1px; left: 0; width: 100%; overflow: hidden; line-height: 0;">
+                <svg viewBox="0 0 1200 120" preserveAspectRatio="none"
+                     style="position: relative; display: block; width: calc(100% + 1.3px); height: 60px;">
+                    <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,
+                                 82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,
+                                 985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35
+                                 A600.21,600.21,0,0,0,321.39,56.44Z"
+                          fill="#ffffff"></path>
+                </svg>
+            </div>
+        </div>
+
+        <div id="creative-experience" class="container py-5">
+            <div class="row g-4 align-items-stretch">
+                <div class="col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm" style="border-radius: 20px; overflow: hidden;">
+                        <img src="https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&w=600&q=80"
+                             class="card-img-top" alt="Visuals" style="height: 200px; object-fit: cover;">
+                        <div class="card-body p-4">
+                            <h4 class="fw-bold mb-3">Immersive Visuals</h4>
+                            <p class="text-muted">
+                                Experience installations, live art, and visual storytelling crafted for creative minds.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm" style="border-radius: 20px; overflow: hidden;">
+                        <img src="https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=600&q=80"
+                             class="card-img-top" alt="Workshops" style="height: 200px; object-fit: cover;">
+                        <div class="card-body p-4">
+                            <h4 class="fw-bold mb-3">Hands-on Sessions</h4>
+                            <p class="text-muted">
+                                Interactive workshops and labs to bring your ideas from concept to reality.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div id="creative-share" class="col-lg-4">
+                    <div class="card h-100 bg-dark text-white border-0 shadow-sm" style="border-radius: 20px;">
+                        <div class="card-body p-5 d-flex flex-column justify-content-center">
+                            <h4 class="fw-bold mb-4">@creativeShareTitle</h4>
+                            <p class="mb-4 text-white-50">
+                                Invite designers, artists, and creators to explore this experience.
+                            </p>
+                            <div class="bg-white bg-opacity-10 p-3 rounded text-break font-monospace small">
+                                @publicLink
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+}
+else if (Model.TemplateKey == "business-elite")
+{
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background:#020617;" id="top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#top">@Model.Name</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#eventNavBusiness">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="eventNavBusiness">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#business-hero">Overview</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#business-cards">Audience</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#business-share">Share</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section id="event-details-business" style="background-color: #f3f4f6; color: #1f2937; font-family: 'Georgia', serif;">
+        <div id="business-hero" class="py-5"
+             style="background: linear-gradient(to right, rgba(17, 24, 39, 0.95), rgba(30, 58, 138, 0.9)),
+                         url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1920&q=80') center/cover;">
+            <div class="container py-5">
+                <div class="row justify-content-center text-center">
+                    <div class="col-lg-9">
+                        <span class="badge bg-warning text-dark mb-4 px-3 py-2 rounded-1 fw-bold">@businessHeroBadge</span>
+                        <h1 class="display-4 text-white fw-bold mb-3" style="font-family: 'Helvetica Neue', sans-serif;">
+                            @businessHeroTitle
+                        </h1>
+                        <p class="lead text-light mb-3 px-lg-5" style="opacity: 0.9;">@businessHeroSubtitle</p>
+
+                        @if (isOwner)
+                        {
+                            <div class="alert alert-info d-inline-flex align-items-center py-2 px-3 mb-3" role="alert">
+                                <i class="bi bi-people me-2"></i>
+                                <span>Registrations: <strong>@registrationsCount</strong></span>
+                                <a asp-controller="Events"
+                                   asp-action="Attendees"
+                                   asp-route-id="@Model.Id"
+                                   class="btn btn-sm btn-outline-light ms-3">
+                                    View attendees
+                                </a>
+                            </div>
+                        }
+
+                        <div class="d-flex justify-content-center gap-3 mt-2">
+                            <a class="btn btn-light btn-lg px-5 rounded-1 fw-bold text-dark"
+                               href="@Url.Action("Register", "Registrations", new { slug = Model.Slug })">
+                                @businessCtaText
+                            </a>
+                            @if (isOwner)
+                            {
+                                <a class="btn btn-outline-light btn-lg px-4 rounded-1"
+                                   href="@Url.Action("Edit", "Events", new { id = Model.Id })">
+                                    Edit Event
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="business-cards" class="container" style="margin-top: -60px;">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card border-0 shadow h-100 rounded-1">
+                        <div class="card-body p-4 border-top border-4 border-primary">
+                            <h5 class="fw-bold text-primary mb-3" style="font-family: sans-serif;">@businessCard1Title</h5>
+                            <p class="text-secondary mb-0">@businessCard1Body</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow h-100 rounded-1">
+                        <div class="card-body p-4 border-top border-4 border-primary">
+                            <h5 class="fw-bold text-primary mb-3" style="font-family: sans-serif;">@businessCard2Title</h5>
+                            <p class="text-secondary mb-0">@businessCard2Body</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow h-100 rounded-1">
+                        <div class="card-body p-4 border-top border-4 border-primary">
+                            <h5 class="fw-bold text-primary mb-3" style="font-family: sans-serif;">@businessCard3Title</h5>
+                            <p class="text-secondary mb-0">@businessCard3Body</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="business-share" class="row mt-5 justify-content-center">
+                <div class="col-lg-8">
+                    <div class="bg-white p-4 rounded-1 shadow-sm d-flex align-items-center justify-content-between flex-wrap gap-3">
+                        <div>
+                            <h5 class="mb-1 fw-bold" style="font-family: sans-serif;">@businessShareTitle</h5>
+                            <small class="text-muted">Share with executives and partners.</small>
+                        </div>
+                        <div class="bg-light px-3 py-2 rounded border text-muted user-select-all">
+                            @publicLink
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+}
+else if (Model.TemplateKey == "minimalist")
+{
+    <nav class="navbar navbar-expand-lg navbar-light"
+         style="background-color:#ffffff;border-bottom:1px solid #e5e5e5;" id="top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#top">@Model.Name</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#eventNavMinimal">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="eventNavMinimal">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#minimal-hero">Overview</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#minimal-info">Info</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#minimal-share">Share</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section id="event-details-minimal"
+             style="font-family: 'Inter', system-ui, sans-serif; background-color: #fff; overflow-x: hidden;">
+        <div id="minimal-hero" class="row g-0 align-items-stretch" style="min-height: 80vh;">
+            <div class="col-lg-6 order-lg-2">
+                <div class="h-100 w-100"
+                     style="background: url('https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=1200&q=90')
+                                center/cover no-repeat; min-height: 400px;">
+                </div>
+            </div>
+            <div class="col-lg-6 order-lg-1 d-flex align-items-center bg-white">
+                <div class="p-5">
+                    <span class="d-inline-block border-bottom border-dark border-2 text-uppercase fw-bold ls-2 mb-4 pb-1"
+                          style="letter-spacing: 2px; font-size: 0.8rem;">Event Details</span>
+                    <h1 class="display-4 fw-bold text-dark mb-3">@minimalHeroTitle</h1>
+                    <p class="text-secondary fs-5 fw-light mb-3"
+                       style="line-height: 1.7; max-width: 500px;">@minimalHeroSubtitle</p>
+
+                    @if (isOwner)
+                    {
+                        <div class="alert alert-info d-inline-flex align-items-center py-2 px-3 mb-3" role="alert">
+                            <i class="bi bi-people me-2"></i>
+                            <span>Registrations: <strong>@registrationsCount</strong></span>
+                            <a asp-controller="Events"
+                               asp-action="Attendees"
+                               asp-route-id="@Model.Id"
+                               class="btn btn-sm btn-outline-dark ms-3">
+                                View attendees
+                            </a>
+                        </div>
+                    }
+
+                    <div class="d-flex flex-wrap gap-3 mb-4">
+                        <a class="btn btn-dark rounded-0 px-5 py-3 fw-medium"
+                           href="@Url.Action("Register", "Registrations", new { slug = Model.Slug })">
+                            @minimalCtaText
+                        </a>
+                        @if (isOwner)
+                        {
+                            <a class="btn btn-outline-dark rounded-0 px-5 py-3"
+                               href="@Url.Action("Edit", "Events", new { id = Model.Id })">
+                                Edit Event
+                            </a>
+                        }
+                    </div>
+
+                    <div id="minimal-info" class="pt-4 mt-3 border-top">
+                        <div class="row">
+                            <div class="col-md-10">
+                                <h6 class="fw-bold mb-2">@minimalInfoTitle</h6>
+                                <p class="text-muted small mb-3">@minimalInfoBody</p>
+                                <div id="minimal-share" class="d-flex align-items-center gap-2">
+                                    <small class="text-uppercase fw-bold text-muted" style="font-size: 0.7rem;">Share:</small>
+                                    <a href="@publicLink" class="text-dark text-decoration-none border-bottom small">
+                                        @publicLink
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+}
+else if (Model.TemplateKey == "colorful")
+{
+    <nav class="navbar navbar-expand-lg navbar-light"
+         style="background: linear-gradient(90deg,#8EC5FC,#E0C3FC);" id="top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#top">@Model.Name</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#eventNavColorful">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="eventNavColorful">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#colorful-hero">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#colorful-highlights">Highlights</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#colorful-link">Link</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section id="event-details-colorful" style="font-family: 'Verdana', sans-serif;">
+        <div id="colorful-hero" class="position-relative py-5"
+             style="background: linear-gradient(135deg, #8EC5FC 0%, #E0C3FC 100%);">
+            <div style="position: absolute; top: 10%; right: 5%; width: 300px; height: 300px;
+                            background: #FF9A9E; filter: blur(80px); opacity: 0.6; border-radius: 50%;"></div>
+            <div style="position: absolute; bottom: 10%; left: 5%; width: 400px; height: 400px;
+                            background: #a18cd1; filter: blur(80px); opacity: 0.6; border-radius: 50%;"></div>
+
+            <div class="container position-relative z-2 py-5 text-center">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="bg-white bg-opacity-25 backdrop-blur rounded-4 p-5 shadow-sm"
+                             style="backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.4);">
+                            <h1 class="display-3 fw-bold mb-3"
+                                style="background: -webkit-linear-gradient(45deg, #333, #666);
+                                           -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                                @colorfulHeroTitle
+                            </h1>
+                            <p class="fs-4 mb-3 text-dark opacity-75">@colorfulHeroSubtitle</p>
+
+                            @if (isOwner)
+                            {
+                                <div class="alert alert-info d-inline-flex align-items-center py-2 px-3 mb-3 bg-opacity-75"
+                                     role="alert">
+                                    <i class="bi bi-people me-2"></i>
+                                    <span>Registrations: <strong>@registrationsCount</strong></span>
+                                    <a asp-controller="Events"
+                                       asp-action="Attendees"
+                                       asp-route-id="@Model.Id"
+                                       class="btn btn-sm btn-outline-dark ms-3">
+                                        View attendees
+                                    </a>
+                                </div>
+                            }
+
+                            <div class="d-flex justify-content-center gap-3 mt-2">
+                                <a class="btn btn-dark btn-lg rounded-pill px-5 shadow-sm border-0"
+                                   style="background: #222;"
+                                   href="@Url.Action("Register", "Registrations", new { slug = Model.Slug })">
+                                    @colorfulCtaText
+                                </a>
+                                @if (isOwner)
+                                {
+                                    <a class="btn btn-outline-dark fw-bold btn-lg rounded-pill px-5 border-2"
+                                       href="@Url.Action("Edit", "Events", new { id = Model.Id })">
+                                        Edit Event
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="colorful-highlights" class="container py-5 z-2 position-relative">
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 rounded-4 shadow-sm"
+                             style="background: rgba(255,255,255,0.8); backdrop-filter: blur(20px);">
+                            <div class="card-body p-4 text-center">
+                                <div class="mb-3 d-inline-block p-3 rounded-circle bg-warning text-white shadow-sm">
+                                    <i class="bi bi-stars fs-2"></i>
+                                </div>
+                                <h5 class="fw-bold text-dark">Experience</h5>
+                                <p class="text-muted mb-0">@colorfulHighlight1</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 rounded-4 shadow-sm"
+                             style="background: rgba(255,255,255,0.8); backdrop-filter: blur(20px);">
+                            <div class="card-body p-4 text-center">
+                                <div class="mb-3 d-inline-block p-3 rounded-circle bg-danger text-white shadow-sm">
+                                    <i class="bi bi-heart-fill fs-2"></i>
+                                </div>
+                                <h5 class="fw-bold text-dark">Community</h5>
+                                <p class="text-muted mb-0">@colorfulHighlight2</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 rounded-4 shadow-sm"
+                             style="background: rgba(255,255,255,0.8); backdrop-filter: blur(20px);">
+                            <div class="card-body p-4 text-center">
+                                <div class="mb-3 d-inline-block p-3 rounded-circle bg-primary text-white shadow-sm">
+                                    <i class="bi bi-palette-fill fs-2"></i>
+                                </div>
+                                <h5 class="fw-bold text-dark">Create</h5>
+                                <p class="text-muted mb-0">@colorfulHighlight3</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="colorful-link" class="row justify-content-center mt-5">
+                    <div class="col-auto">
+                        <div class="bg-white bg-opacity-50 px-4 py-2 rounded-pill shadow-sm">
+                            <span class="fw-bold small me-2">LINK:</span>
+                            <a href="@publicLink" class="text-dark text-decoration-none small font-monospace">
+                                @publicLink
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+}
+else if (Model.TemplateKey == "academic")
+{
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color:#0b1726;" id="top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#top">@Model.Name</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#eventNavAcademic">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="eventNavAcademic">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#academic-hero">Overview</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#academic-tracks">Tracks</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#academic-share">Citation link</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section id="event-details-academic" style="background-color: #f8f9fa; font-family: 'Merriweather', serif;">
+        <div id="academic-hero" class="position-relative text-white"
+             style="background: linear-gradient(rgba(13, 37, 63, 0.85), rgba(13, 37, 63, 0.9)),
+                         url('https://images.unsplash.com/photo-1507842217343-583bb726cc2e?auto=format&fit=crop&w=1920&q=80')
+                         center/cover no-repeat;">
+            <div class="container py-5">
+                <div class="row align-items-center py-4">
+                    <div class="col-lg-8 mb-4 mb-lg-0">
+                        <div class="d-inline-block border border-light border-opacity-25 bg-white bg-opacity-10
+                                        px-3 py-1 rounded-pill mb-3 fw-bold small text-uppercase"
+                             style="font-family: sans-serif; letter-spacing: 1px;">
+                            Academic Conference
+                        </div>
+                        <h1 class="fw-bold mb-3 display-4">@academicHeroTitle</h1>
+                        <p class="text-white-50 fs-5 mb-3" style="line-height: 1.8;">@academicHeroSubtitle</p>
+
+                        @if (isOwner)
+                        {
+                            <div class="alert alert-info d-inline-flex align-items-center py-2 px-3 mb-3 bg-opacity-75"
+                                 role="alert">
+                                <i class="bi bi-people me-2"></i>
+                                <span>Registrations: <strong>@registrationsCount</strong></span>
+                                <a asp-controller="Events"
+                                   asp-action="Attendees"
+                                   asp-route-id="@Model.Id"
+                                   class="btn btn-sm btn-outline-light ms-3">
+                                    View attendees
+                                </a>
+                            </div>
+                        }
+
+                        <div class="d-flex gap-2 mt-2">
+                            <a class="btn btn-light btn-lg px-4 text-dark fw-bold"
+                               style="font-family: sans-serif;"
+                               href="@Url.Action("Register", "Registrations", new { slug = Model.Slug })">
+                                @academicCtaText
+                            </a>
+                            @if (isOwner)
+                            {
+                                <a class="btn btn-outline-light btn-lg px-4"
+                                   style="font-family: sans-serif;"
+                                   href="@Url.Action("Edit", "Events", new { id = Model.Id })">
+                                    Edit Event
+                                </a>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div id="academic-share"
+                             class="card border-0 bg-white bg-opacity-10 text-white p-3 backdrop-blur shadow-sm">
+                            <div class="card-body">
+                                <h6 class="fw-bold text-uppercase mb-3"
+                                    style="font-family: sans-serif; font-size: 0.8rem; letter-spacing: 1px;">
+                                    @academicShareTitle
+                                </h6>
+                                <p class="small text-white-50 mb-2">Permanent link for citation:</p>
+                                <div class="bg-dark bg-opacity-50 border border-secondary p-2 rounded
+                                                text-break font-monospace small text-light">
+                                    @publicLink
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="academic-tracks" class="container py-5">
+            <div class="row g-4" style="margin-top: -50px;">
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body p-4 border-top border-4 border-primary">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="icon-box bg-primary bg-opacity-10 text-primary rounded-circle
+                                                d-flex align-items-center justify-content-center me-3"
+                                     style="width: 48px; height: 48px;">
+                                    <i class="bi bi-journal-text fs-4"></i>
+                                </div>
+                                <h5 class="card-title fw-bold mb-0" style="font-family: sans-serif;">
+                                    @academicTrack1Title
+                                </h5>
+                            </div>
+                            <p class="card-text text-secondary">@academicTrack1Body</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body p-4 border-top border-4 border-success">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="icon-box bg-success bg-opacity-10 text-success rounded-circle
+                                                d-flex align-items-center justify-content-center me-3"
+                                     style="width: 48px; height: 48px;">
+                                    <i class="bi bi-briefcase fs-4"></i>
+                                </div>
+                                <h5 class="card-title fw-bold mb-0" style="font-family: sans-serif;">
+                                    @academicTrack2Title
+                                </h5>
+                            </div>
+                            <p class="card-text text-secondary">@academicTrack2Body</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body p-4 border-top border-4 border-warning">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="icon-box bg-warning bg-opacity-10 text-warning rounded-circle
+                                                d-flex align-items-center justify-content-center me-3"
+                                     style="width: 48px; height: 48px;">
+                                    <i class="bi bi-lightbulb fs-4"></i>
+                                </div>
+                                <h5 class="card-title fw-bold mb-0" style="font-family: sans-serif;">
+                                    @academicTrack3Title
+                                </h5>
+                            </div>
+                            <p class="card-text text-secondary">@academicTrack3Body</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+}
+

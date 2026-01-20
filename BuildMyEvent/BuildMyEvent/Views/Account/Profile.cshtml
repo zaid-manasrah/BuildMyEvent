@@ -1,0 +1,76 @@
+﻿@model BuildMyEvent.Models.ViewModels.EditProfileViewModel
+
+@{
+    ViewData["Title"] = "My Profile";
+    var totalEvents = ViewBag.TotalEvents as int? ?? 0;
+    var totalRegistrations = ViewBag.TotalRegistrations as int? ?? 0;
+}
+
+<section class="py-5" style="min-height: 80vh; background: radial-gradient(circle at top, #f0f4ff 0, #ffffff 55%);">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <h5 class="mb-3">Overview</h5>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-muted">My events</span>
+                            <span class="fw-semibold">@totalEvents</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-muted">Total registrations</span>
+                            <span class="fw-semibold">@totalRegistrations</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <h6 class="mb-2">Shortcuts</h6>
+                        <a class="btn btn-outline-primary w-100 mb-2" href="@Url.Action("MyEvents", "Events")">
+                            Go to My Events
+                        </a>
+                        <a class="btn btn-outline-secondary w-100" href="@Url.Action("Index", "Home")">
+                            Back to Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <h4 class="mb-4">My Profile</h4>
+
+                        <form asp-action="Profile" method="post">
+                            <input type="hidden" asp-for="Id" />
+
+                            <div class="mb-3">
+                                <label asp-for="Name" class="form-label"></label>
+                                <input asp-for="Name" class="form-control" />
+                                <span asp-validation-for="Name" class="text-danger small"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Email" class="form-label"></label>
+                                <input asp-for="Email" class="form-control" />
+                                <span asp-validation-for="Email" class="text-danger small"></span>
+                            </div>
+
+                            <button type="submit" name="submit" value="save" class="btn btn-primary">
+                                Save changes
+                            </button>
+                            <button type="submit" name="submit" value="cancel" class="btn btn-secondary ms-2">
+                                Cancel
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

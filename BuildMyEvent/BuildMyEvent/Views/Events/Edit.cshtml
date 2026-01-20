@@ -1,0 +1,631 @@
+﻿@model BuildMyEvent.Models.ViewModels.EditEventViewModel
+
+@{
+    ViewData["Title"] = "Edit Event";
+}
+
+<section id="edit-event" class="py-5" style="min-height: 80vh; background: radial-gradient(circle at top, #f0f4ff 0, #ffffff 55%);">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-xl-10">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4 p-md-5">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div>
+                                <h1 class="h4 mb-1">Edit Event</h1>
+                                <p class="text-muted mb-0">Update your event information and template content.</p>
+                            </div>
+                            <div>
+                                <a asp-action="MyEvents" class="btn btn-outline-secondary">
+                                    Back to My Events
+                                </a>
+                            </div>
+                        </div>
+
+                        <form asp-action="Edit" method="post">
+                            <input type="hidden" asp-for="Id" />
+                            <input type="hidden" asp-for="Slug" />
+                            <input type="hidden" id="edit-template-key" value="@Model.TemplateKey" />
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label asp-for="Name" class="form-label"></label>
+                                    <input asp-for="Name" class="form-control" />
+                                    <span asp-validation-for="Name" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="TemplateKey" class="form-label"></label>
+                                    <input asp-for="TemplateKey" class="form-control" readonly />
+                                    <span asp-validation-for="TemplateKey" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label asp-for="Description" class="form-label"></label>
+                                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                                <span asp-validation-for="Description" class="text-danger small"></span>
+                            </div>
+
+                            @if (Model.TemplateKey == "tech-pro")
+                            {
+                                <div class="template-block template-tech-pro">
+                                    <hr class="my-4" />
+
+                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                                        <h4 class="h5 mb-0">Tech Pro template content</h4>
+                                        <span class="badge bg-dark-subtle text-dark small">
+                                            This controls the Tech Pro event page sections
+                                        </span>
+                                    </div>
+
+                                    <div class="alert alert-info small mb-4">
+                                        <strong>Where does this text appear?</strong><br />
+                                        • Hero section: event name + description (from the fields above).<br />
+                                        • <em>Why attend</em> box: shown on the right side of the hero.<br />
+                                        • Three audience cards: shown under the hero (“Who is this for”).
+                                    </div>
+
+                                    <div class="border rounded-3 p-3 p-md-4 mb-4 bg-light-subtle">
+                                        <h5 class="h6 text-uppercase text-muted mb-3">Why attend box (right side of hero)</h5>
+
+                                        <div class="mb-3">
+                                            <label asp-for="TechProWhyAttendTitle" class="form-label">
+                                                Heading above the bullets (default: "Why attend?")
+                                            </label>
+                                            <input asp-for="TechProWhyAttendTitle" class="form-control" />
+                                            <span asp-validation-for="TechProWhyAttendTitle" class="text-danger small"></span>
+                                        </div>
+
+                                        <div class="row g-3">
+                                            <div class="col-md-4">
+                                                <label asp-for="TechProWhyAttendPoint1" class="form-label">
+                                                    Bullet 1 (top line)
+                                                </label>
+                                                <input asp-for="TechProWhyAttendPoint1" class="form-control" />
+                                                <span asp-validation-for="TechProWhyAttendPoint1" class="text-danger small"></span>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label asp-for="TechProWhyAttendPoint2" class="form-label">
+                                                    Bullet 2 (middle line)
+                                                </label>
+                                                <input asp-for="TechProWhyAttendPoint2" class="form-control" />
+                                                <span asp-validation-for="TechProWhyAttendPoint2" class="text-danger small"></span>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label asp-for="TechProWhyAttendPoint3" class="form-label">
+                                                    Bullet 3 (last line)
+                                                </label>
+                                                <input asp-for="TechProWhyAttendPoint3" class="form-control" />
+                                                <span asp-validation-for="TechProWhyAttendPoint3" class="text-danger small"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="border rounded-3 p-3 p-md-4 bg-light-subtle">
+                                        <h5 class="h6 text-uppercase text-muted mb-3">Audience cards under the hero</h5>
+
+                                        <div class="row g-4">
+                                            <div class="col-md-4">
+                                                <label asp-for="TechProCard1Title" class="form-label">
+                                                    Left card title (e.g. "For technology leaders")
+                                                </label>
+                                                <input asp-for="TechProCard1Title" class="form-control" />
+                                                <span asp-validation-for="TechProCard1Title" class="text-danger small"></span>
+
+                                                <label asp-for="TechProCard1Body" class="form-label mt-2">
+                                                    Left card body text
+                                                </label>
+                                                <textarea asp-for="TechProCard1Body" class="form-control" rows="3"></textarea>
+                                                <span asp-validation-for="TechProCard1Body" class="text-danger small"></span>
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                <label asp-for="TechProCard2Title" class="form-label">
+                                                    Middle card title (e.g. "For developers & engineers")
+                                                </label>
+                                                <input asp-for="TechProCard2Title" class="form-control" />
+                                                <span asp-validation-for="TechProCard2Title" class="text-danger small"></span>
+
+                                                <label asp-for="TechProCard2Body" class="form-label mt-2">
+                                                    Middle card body text
+                                                </label>
+                                                <textarea asp-for="TechProCard2Body" class="form-control" rows="3"></textarea>
+                                                <span asp-validation-for="TechProCard2Body" class="text-danger small"></span>
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                <label asp-for="TechProCard3Title" class="form-label">
+                                                    Right card title (e.g. "Share with your team")
+                                                </label>
+                                                <input asp-for="TechProCard3Title" class="form-control" />
+                                                <span asp-validation-for="TechProCard3Title" class="text-danger small"></span>
+
+                                                <label asp-for="TechProCard3Body" class="form-label mt-2">
+                                                    Right card body text
+                                                </label>
+                                                <textarea asp-for="TechProCard3Body" class="form-control" rows="3"></textarea>
+                                                <span asp-validation-for="TechProCard3Body" class="text-danger small"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            else if (Model.TemplateKey == "creative-spark")
+                            {
+                                <div class="template-block template-creative-spark">
+                                    <hr class="my-4" />
+
+                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                                        <h4 class="h5 mb-0">Creative Spark template content</h4>
+                                        <span class="badge bg-dark-subtle text-dark small">
+                                            Controls the Creative event landing page sections
+                                        </span>
+                                    </div>
+
+                                    <div class="alert alert-info small mb-4">
+                                        <strong>Where does this text appear?</strong><br />
+                                        • Hero section: big colorful header at the top of the page.<br />
+                                        • Call-to-action button: main button in the hero (e.g. "Join This Creative Event").<br />
+                                        • Share card title: dark card on the right at the bottom with the public link.
+                                    </div>
+
+                                    <div class="border rounded-3 p-3 p-md-4 mb-4 bg-light-subtle">
+                                        <h5 class="h6 text-uppercase text-muted mb-3">Hero section (top colored header)</h5>
+
+                                        <div class="mb-3">
+                                            <label asp-for="CreativeHeroTitle" class="form-label">
+                                                Hero title (big main heading in the center)
+                                            </label>
+                                            <input asp-for="CreativeHeroTitle" class="form-control" />
+                                            <span asp-validation-for="CreativeHeroTitle" class="text-danger small"></span>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label asp-for="CreativeHeroSubtitle" class="form-label">
+                                                Hero subtitle (large line of text under the title)
+                                            </label>
+                                            <textarea asp-for="CreativeHeroSubtitle" class="form-control" rows="3"></textarea>
+                                            <span asp-validation-for="CreativeHeroSubtitle" class="text-danger small"></span>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label asp-for="CreativeCtaText" class="form-label">
+                                                Call-to-action button text (white button in hero)
+                                            </label>
+                                            <input asp-for="CreativeCtaText" class="form-control" />
+                                            <span asp-validation-for="CreativeCtaText" class="text-danger small"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="border rounded-3 p-3 p-md-4 bg-light-subtle">
+                                        <h5 class="h6 text-uppercase text-muted mb-3">Share card (dark card on the right)</h5>
+
+                                        <div class="mb-3">
+                                            <label asp-for="CreativeShareTitle" class="form-label">
+                                                Title above the public link (e.g. "Share this link")
+                                            </label>
+                                            <input asp-for="CreativeShareTitle" class="form-control" />
+                                            <span asp-validation-for="CreativeShareTitle" class="text-danger small"></span>
+                                        </div>
+
+                                        <p class="small text-muted mb-0">
+                                            The public link itself is generated automatically and shown in that card;
+                                            you only control the title text here.
+                                        </p>
+                                    </div>
+                                </div>
+                            }
+                            else if (Model.TemplateKey == "business-elite")
+                            {
+                                <div class="template-block template-business-elite">
+                                    <hr class="my-4" />
+
+                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                                        <h4 class="h5 mb-0">Business Elite template content</h4>
+                                        <span class="badge bg-dark-subtle text-dark small">
+                                            Controls the Business Elite landing sections
+                                        </span>
+                                    </div>
+
+                                    <div class="alert alert-info small mb-4">
+                                        <strong>Where does this text appear?</strong><br />
+                                        • Hero badge, title, subtitle and CTA at the top of the page.<br />
+                                        • Three feature cards under the hero.<br />
+                                        • Share block at the bottom right.
+                                    </div>
+
+                                    <div class="border rounded-3 p-3 p-md-4 mb-4 bg-light-subtle">
+                                        <h5 class="h6 text-uppercase text-muted mb-3">Hero section</h5>
+
+                                        <div class="mb-3">
+                                            <label asp-for="BusinessHeroBadge" class="form-label">
+                                                Hero badge (small label above title)
+                                            </label>
+                                            <input asp-for="BusinessHeroBadge" class="form-control" />
+                                            <span asp-validation-for="BusinessHeroBadge" class="text-danger small"></span>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label asp-for="BusinessHeroTitle" class="form-label">
+                                                Hero title (main heading)
+                                            </label>
+                                            <input asp-for="BusinessHeroTitle" class="form-control" />
+                                            <span asp-validation-for="BusinessHeroTitle" class="text-danger small"></span>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label asp-for="BusinessHeroSubtitle" class="form-label">
+                                                Hero subtitle (supporting text)
+                                            </label>
+                                            <textarea asp-for="BusinessHeroSubtitle" class="form-control" rows="3"></textarea>
+                                            <span asp-validation-for="BusinessHeroSubtitle" class="text-danger small"></span>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label asp-for="BusinessCtaText" class="form-label">
+                                                CTA button text (primary hero button)
+                                            </label>
+                                            <input asp-for="BusinessCtaText" class="form-control" />
+                                            <span asp-validation-for="BusinessCtaText" class="text-danger small"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="border rounded-3 p-3 p-md-4 mb-4 bg-light-subtle">
+                                        <h5 class="h6 text-uppercase text-muted mb-3">Feature cards</h5>
+
+                                        <div class="row g-3">
+                                            <div class="col-md-4">
+                                                <label asp-for="BusinessCard1Title" class="form-label">
+                                                    Card 1 title
+                                                </label>
+                                                <input asp-for="BusinessCard1Title" class="form-control" />
+                                                <span asp-validation-for="BusinessCard1Title" class="text-danger small"></span>
+
+                                                <label asp-for="BusinessCard1Body" class="form-label mt-2">
+                                                    Card 1 body
+                                                </label>
+                                                <textarea asp-for="BusinessCard1Body" class="form-control" rows="2"></textarea>
+                                                <span asp-validation-for="BusinessCard1Body" class="text-danger small"></span>
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                <label asp-for="BusinessCard2Title" class="form-label">
+                                                    Card 2 title
+                                                </label>
+                                                <input asp-for="BusinessCard2Title" class="form-control" />
+                                                <span asp-validation-for="BusinessCard2Title" class="text-danger small"></span>
+
+                                                <label asp-for="BusinessCard2Body" class="form-label mt-2">
+                                                    Card 2 body
+                                                </label>
+                                                <textarea asp-for="BusinessCard2Body" class="form-control" rows="2"></textarea>
+                                                <span asp-validation-for="BusinessCard2Body" class="text-danger small"></span>
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                <label asp-for="BusinessCard3Title" class="form-label">
+                                                    Card 3 title
+                                                </label>
+                                                <input asp-for="BusinessCard3Title" class="form-control" />
+                                                <span asp-validation-for="BusinessCard3Title" class="text-danger small"></span>
+
+                                                <label asp-for="BusinessCard3Body" class="form-label mt-2">
+                                                    Card 3 body
+                                                </label>
+                                                <textarea asp-for="BusinessCard3Body" class="form-control" rows="2"></textarea>
+                                                <span asp-validation-for="BusinessCard3Body" class="text-danger small"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="border rounded-3 p-3 p-md-4 bg-light-subtle">
+                                        <h5 class="h6 text-uppercase text-muted mb-3">Share block</h5>
+
+                                        <div class="mb-3">
+                                            <label asp-for="BusinessShareTitle" class="form-label">
+                                                Share block title (above public link)
+                                            </label>
+                                            <input asp-for="BusinessShareTitle" class="form-control" />
+                                            <span asp-validation-for="BusinessShareTitle" class="text-danger small"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            else if (Model.TemplateKey == "minimalist")
+                            {
+                                <div class="template-block template-minimalist">
+                                    <hr class="my-4" />
+
+                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                                        <h4 class="h5 mb-0">Minimalist template content</h4>
+                                        <span class="badge bg-dark-subtle text-dark small">
+                                            Simple hero and info block
+                                        </span>
+                                    </div>
+
+                                    <div class="alert alert-info small mb-4">
+                                        <strong>Where does this text appear?</strong><br />
+                                        • Clean hero title, subtitle, and CTA at the top.<br />
+                                        • Info block section below the hero.
+                                    </div>
+
+                                    <div class="border rounded-3 p-3 p-md-4 mb-4 bg-light-subtle">
+                                        <h5 class="h6 text-uppercase text-muted mb-3">Hero section</h5>
+
+                                        <div class="mb-3">
+                                            <label asp-for="MinimalHeroTitle" class="form-label">
+                                                Hero title (main heading)
+                                            </label>
+                                            <input asp-for="MinimalHeroTitle" class="form-control" />
+                                            <span asp-validation-for="MinimalHeroTitle" class="text-danger small"></span>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label asp-for="MinimalHeroSubtitle" class="form-label">
+                                                Hero subtitle (supporting line)
+                                            </label>
+                                            <textarea asp-for="MinimalHeroSubtitle" class="form-control" rows="3"></textarea>
+                                            <span asp-validation-for="MinimalHeroSubtitle" class="text-danger small"></span>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label asp-for="MinimalCtaText" class="form-label">
+                                                CTA button text
+                                            </label>
+                                            <input asp-for="MinimalCtaText" class="form-control" />
+                                            <span asp-validation-for="MinimalCtaText" class="text-danger small"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="border rounded-3 p-3 p-md-4 bg-light-subtle">
+                                        <h5 class="h6 text-uppercase text-muted mb-3">Info block</h5>
+
+                                        <div class="mb-3">
+                                            <label asp-for="MinimalInfoTitle" class="form-label">
+                                                Info block title
+                                            </label>
+                                            <input asp-for="MinimalInfoTitle" class="form-control" />
+                                            <span asp-validation-for="MinimalInfoTitle" class="text-danger small"></span>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label asp-for="MinimalInfoBody" class="form-label">
+                                                Info block body
+                                            </label>
+                                            <textarea asp-for="MinimalInfoBody" class="form-control" rows="3"></textarea>
+                                            <span asp-validation-for="MinimalInfoBody" class="text-danger small"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            else if (Model.TemplateKey == "colorful")
+                            {
+                                <div class="template-block template-colorful">
+                                    <hr class="my-4" />
+
+                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                                        <h4 class="h5 mb-0">Colorful template content</h4>
+                                        <span class="badge bg-dark-subtle text-dark small">
+                                            Bright hero and three highlights
+                                        </span>
+                                    </div>
+
+                                    <div class="alert alert-info small mb-4">
+                                        <strong>Where does this text appear?</strong><br />
+                                        • Colorful hero title, subtitle, and CTA at the top.<br />
+                                        • Three highlight items under the hero.
+                                    </div>
+
+                                    <div class="border rounded-3 p-3 p-md-4 mb-4 bg-light-subtle">
+                                        <h5 class="h6 text-uppercase text-muted mb-3">Hero section</h5>
+
+                                        <div class="mb-3">
+                                            <label asp-for="ColorfulHeroTitle" class="form-label">
+                                                Hero title
+                                            </label>
+                                            <input asp-for="ColorfulHeroTitle" class="form-control" />
+                                            <span asp-validation-for="ColorfulHeroTitle" class="text-danger small"></span>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label asp-for="ColorfulHeroSubtitle" class="form-label">
+                                                Hero subtitle
+                                            </label>
+                                            <textarea asp-for="ColorfulHeroSubtitle" class="form-control" rows="3"></textarea>
+                                            <span asp-validation-for="ColorfulHeroSubtitle" class="text-danger small"></span>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label asp-for="ColorfulCtaText" class="form-label">
+                                                CTA button text
+                                            </label>
+                                            <input asp-for="ColorfulCtaText" class="form-control" />
+                                            <span asp-validation-for="ColorfulCtaText" class="text-danger small"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="border rounded-3 p-3 p-md-4 bg-light-subtle">
+                                        <h5 class="h6 text-uppercase text-muted mb-3">Highlights</h5>
+
+                                        <div class="row g-3">
+                                            <div class="col-md-4">
+                                                <label asp-for="ColorfulHighlight1" class="form-label">
+                                                    Highlight 1
+                                                </label>
+                                                <input asp-for="ColorfulHighlight1" class="form-control" />
+                                                <span asp-validation-for="ColorfulHighlight1" class="text-danger small"></span>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label asp-for="ColorfulHighlight2" class="form-label">
+                                                    Highlight 2
+                                                </label>
+                                                <input asp-for="ColorfulHighlight2" class="form-control" />
+                                                <span asp-validation-for="ColorfulHighlight2" class="text-danger small"></span>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label asp-for="ColorfulHighlight3" class="form-label">
+                                                    Highlight 3
+                                                </label>
+                                                <input asp-for="ColorfulHighlight3" class="form-control" />
+                                                <span asp-validation-for="ColorfulHighlight3" class="text-danger small"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            else if (Model.TemplateKey == "academic")
+                            {
+                                <div class="template-block template-academic">
+                                    <hr class="my-4" />
+
+                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                                        <h4 class="h5 mb-0">Academic template content</h4>
+                                        <span class="badge bg-dark-subtle text-dark small">
+                                            Academic hero, tracks, and share block
+                                        </span>
+                                    </div>
+
+                                    <div class="alert alert-info small mb-4">
+                                        <strong>Where does this text appear?</strong><br />
+                                        • Academic hero (title, subtitle, CTA) at the top.<br />
+                                        • Three tracks section under the hero.<br />
+                                        • Share block title by the public link card.
+                                    </div>
+
+                                    <div class="border rounded-3 p-3 p-md-4 mb-4 bg-light-subtle">
+                                        <h5 class="h6 text-uppercase text-muted mb-3">Hero section</h5>
+
+                                        <div class="mb-3">
+                                            <label asp-for="AcademicHeroTitle" class="form-label">
+                                                Hero title
+                                            </label>
+                                            <input asp-for="AcademicHeroTitle" class="form-control" />
+                                            <span asp-validation-for="AcademicHeroTitle" class="text-danger small"></span>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label asp-for="AcademicHeroSubtitle" class="form-label">
+                                                Hero subtitle
+                                            </label>
+                                            <textarea asp-for="AcademicHeroSubtitle" class="form-control" rows="3"></textarea>
+                                            <span asp-validation-for="AcademicHeroSubtitle" class="text-danger small"></span>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label asp-for="AcademicCtaText" class="form-label">
+                                                CTA button text
+                                            </label>
+                                            <input asp-for="AcademicCtaText" class="form-control" />
+                                            <span asp-validation-for="AcademicCtaText" class="text-danger small"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="border rounded-3 p-3 p-md-4 mb-4 bg-light-subtle">
+                                        <h5 class="h6 text-uppercase text-muted mb-3">Tracks</h5>
+
+                                        <div class="row g-3">
+                                            <div class="col-md-4">
+                                                <label asp-for="AcademicTrack1Title" class="form-label">
+                                                    Track 1 title
+                                                </label>
+                                                <input asp-for="AcademicTrack1Title" class="form-control" />
+                                                <span asp-validation-for="AcademicTrack1Title" class="text-danger small"></span>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <label asp-for="AcademicTrack1Body" class="form-label">
+                                                    Track 1 body
+                                                </label>
+                                                <textarea asp-for="AcademicTrack1Body" class="form-control" rows="2"></textarea>
+                                                <span asp-validation-for="AcademicTrack1Body" class="text-danger small"></span>
+                                            </div>
+                                        </div>
+
+                                        <div class="row g-3 mt-3">
+                                            <div class="col-md-4">
+                                                <label asp-for="AcademicTrack2Title" class="form-label">
+                                                    Track 2 title
+                                                </label>
+                                                <input asp-for="AcademicTrack2Title" class="form-control" />
+                                                <span asp-validation-for="AcademicTrack2Title" class="text-danger small"></span>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <label asp-for="AcademicTrack2Body" class="form-label">
+                                                    Track 2 body
+                                                </label>
+                                                <textarea asp-for="AcademicTrack2Body" class="form-control" rows="2"></textarea>
+                                                <span asp-validation-for="AcademicTrack2Body" class="text-danger small"></span>
+                                            </div>
+                                        </div>
+
+                                        <div class="row g-3 mt-3">
+                                            <div class="col-md-4">
+                                                <label asp-for="AcademicTrack3Title" class="form-label">
+                                                    Track 3 title
+                                                </label>
+                                                <input asp-for="AcademicTrack3Title" class="form-control" />
+                                                <span asp-validation-for="AcademicTrack3Title" class="text-danger small"></span>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <label asp-for="AcademicTrack3Body" class="form-label">
+                                                    Track 3 body
+                                                </label>
+                                                <textarea asp-for="AcademicTrack3Body" class="form-control" rows="2"></textarea>
+                                                <span asp-validation-for="AcademicTrack3Body" class="text-danger small"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="border rounded-3 p-3 p-md-4 bg-light-subtle">
+                                        <h5 class="h6 text-uppercase text-muted mb-3">Share block</h5>
+
+                                        <div class="mb-3">
+                                            <label asp-for="AcademicShareTitle" class="form-label">
+                                                Share block title (above public link)
+                                            </label>
+                                            <input asp-for="AcademicShareTitle" class="form-control" />
+                                            <span asp-validation-for="AcademicShareTitle" class="text-danger small"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-primary">
+                                    Save
+                                </button>
+                                <a asp-action="MyEvents" class="btn btn-secondary ms-2">
+                                    Cancel
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var keyInput = document.getElementById('edit-template-key');
+            if (!keyInput) return;
+
+            var key = keyInput.value.trim();
+            var blocks = document.querySelectorAll('.template-block');
+            blocks.forEach(function (el) {
+                el.style.display = 'none';
+            });
+
+            if (key) {
+                var selector = '.template-' + key.replace(/\s+/g, '-');
+                var block = document.querySelector(selector);
+                if (block) {
+                    block.style.display = 'block';
+                }
+            }
+        });
+    </script>
+}
