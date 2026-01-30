@@ -68,7 +68,7 @@ namespace BuildMyEvent.Controllers
             if (ev == null) return NotFound();
 
             ViewBag.EventName = ev.Name;
-            return View();
+            return View(ev);
         }
     }
 }

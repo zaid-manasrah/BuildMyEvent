@@ -1,4 +1,5 @@
-﻿@{
+﻿@model BuildMyEvent.Models.Event
+@{
     ViewData["Title"] = "Registration Complete";
     var eventName = ViewBag.EventName as string ?? "Event";
 }
@@ -12,10 +13,11 @@
                     text
                     <div class="d-flex flex-column flex-sm-row justify-content-center gap-2">
                         
-                        <a asp-controller="Home"
-                           asp-action="Index"
+                        <a asp-controller="Events"
+                           asp-action="Details"
+                           asp-route-slug="@Model.Slug"
                            class="btn btn-outline-secondary px-4">
-                            Back to home
+                            Back To Event
                         </a>
                     </div>
                 </div>
