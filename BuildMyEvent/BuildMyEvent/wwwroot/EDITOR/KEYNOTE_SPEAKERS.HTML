@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="dynamic-title">Ultimate Keynote Builder - Emad Edition</title>
+    <link id="favicon" rel="icon" type="image/x-icon" href="https://via.placeholder.com/32">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style id="custom-theme-styles">
+        :root {
+            --primary-color: #6366f1;
+            --primary-hover: #818cf8;
+            --nav-bg: #0f172a;
+            --header-footer-bg: #1e1b4b;
+            --page-bg: #f8fafc;
+            --top-header-bg: #ffffff;
+            --header-text: #1e293b;
+            --card-bg: #ffffff;
+            --card-text: #1e293b;
+            --card-box-bg: #f8fafc;
+            --hero-text: #ffffff;
+            --hero-sub-text: #c7d2fe;
+            --sponsors-bg: #ffffff;
+        }
+
+        .nav-link { 
+            color: white; font-weight: 600; font-size: 9px; text-transform: uppercase; 
+            white-space: nowrap; cursor: pointer; transition: 0.3s; padding: 5px 6px;
+        }
+        .nav-link:hover { color: var(--primary-hover) !important; }
+        
+        .speaker-card { 
+            position: relative; transition: 0.4s; border: 1px solid rgba(0,0,0,0.05); 
+            padding: 30px; border-radius: 24px; 
+            background-color: var(--card-bg); color: var(--card-text);
+        }
+        .speaker-card:hover { transform: translateY(-10px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); border-color: var(--primary-color); }
+        .speaker-image { width: 200px; height: 200px; border-radius: 50%; object-fit: cover; border: 6px solid rgba(0,0,0,0.05); transition: 0.3s; }
+
+        #theme-panel {
+            position: fixed; left: 15px; top: 120px;
+            background: white; padding: 15px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 10000; display: flex; flex-direction: column; gap: 8px; border: 1px solid #e2e8f0;
+            width: 220px; transition: 0.3s all ease-in-out;
+        }
+        #theme-panel.hidden-panel { transform: translateX(-250px); opacity: 0; pointer-events: none; }
+        
+        #toggle-panel-btn {
+            position: fixed; left: 15px; top: 120px; z-index: 10001;
+            background: #6366f1; color: white; width: 35px; height: 35px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: 0.3s;
+        }
+
+        .input-group { display: flex; flex-direction: column; gap: 1px; font-size: 9px; font-weight: bold; color: #475569; }
+        input[type="color"] { width: 100%; height: 20px; cursor: pointer; border-radius: 3px; border: 1px solid #ddd; padding: 0; }
+        input[type="text"] { width: 100%; padding: 4px; border: 1px solid #ddd; border-radius: 4px; font-size: 10px; }
+
+        .download-btn-container { position: fixed; bottom: 30px; right: 30px; z-index: 9999; }
+        [contenteditable]:focus { outline: none; background: rgba(255, 252, 235, 0.5); border-radius: 4px; }
+        
+        .sponsor-img { height: 60px; object-fit: contain; filter: grayscale(100%); transition: 0.3s; cursor: pointer; }
+        .sponsor-img:hover { filter: grayscale(0%); }
+    </style>
+</head>
+<body id="body-main" style="background-color: var(--page-bg);" class="font-sans">
+
+    <div id="toggle-panel-btn" onclick="togglePanel()">🎨</div>
+
+    <div id="theme-panel" class="hidden-panel">
+        <div class="flex justify-between items-center border-b pb-2 mb-1">
+            <h4 class="text-[10px] font-black uppercase text-indigo-600">UI Controller</h4>
+            <span onclick="togglePanel()" class="cursor-pointer text-xs bg-slate-100 px-1 rounded hover:bg-red-100">✕</span>
+        </div>
+        
+        <div class="input-group">
+            <label>Browser Tab Title</label>
+            <input type="text" id="tab-title-input" placeholder="Enter Page Title..." oninput="updatePageTitle(this.value)">
+        </div>
+
+        <div class="input-group"><label>Accent Color</label><input type="color" id="color-primary" value="#6366f1" oninput="updateTheme()"></div>
+        <div class="input-group"><label>Nav & Hero BG</label><input type="color" id="color-hero-footer" value="#1e1b4b" oninput="updateTheme()"></div>
+        <div class="input-group"><label>Hero Text</label><input type="color" id="color-hero-text" value="#ffffff" oninput="updateTheme()"></div>
+        <div class="input-group"><label>Page BG</label><input type="color" id="color-page-bg" value="#f8fafc" oninput="updateTheme()"></div>
+        <div class="input-group"><label>Card BG</label><input type="color" id="color-card-bg" value="#ffffff" oninput="updateTheme()"></div>
+        <div class="input-group"><label>Sponsors Section BG</label><input type="color" id="color-sponsors-bg" value="#ffffff" oninput="updateTheme()"></div>
+        <div class="input-group"><label>Card Text</label><input type="color" id="color-card-text" value="#1e293b" oninput="updateTheme()"></div>
+        <div class="input-group"><label>Box BG</label><input type="color" id="color-card-box" value="#f8fafc" oninput="updateTheme()"></div>
+    </div>
+
+    <div class="download-btn-container" id="admin-ui">
+        <button onclick="downloadPage()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-xl font-bold shadow-2xl transition-all transform hover:scale-105 flex items-center gap-2">
+            <span>SAVE PAGE</span> ⬇️
+        </button>
+    </div>
+
+    <div id="capture-area">
+        <header id="top-header" class="py-4 px-10 flex justify-between items-center border-b border-slate-100" style="background-color: var(--top-header-bg);">
+            <div class="flex items-center gap-4">
+                <input type="file" id="logo-input" class="hidden" onchange="handleLogoUpload(this)">
+                <img id="logo-img" onclick="document.getElementById('logo-input').click()" src="https://via.placeholder.com/200x50?text=LOGO" class="h-10 cursor-pointer object-contain">
+            </div>
+            <div class="text-right">
+                <p contenteditable="true" class="text-xs font-bold uppercase tracking-widest org-accent" style="color: var(--primary-color)">Conference 2025</p>
+                <p contenteditable="true" class="text-sm font-semibold italic card-main-text" style="color: var(--card-text)">Jordan University of Science & Technology</p>
+            </div>
+        </header>
+
+        <nav id="main-nav" class="py-3 px-2 sticky top-0 z-50 shadow-lg" style="background-color: var(--nav-bg);">
+            <div class="flex flex-wrap justify-center gap-1">
+                <a href="index.html" target="_blank" class="nav-link">HOME</a>
+                <a href="calls.html" target="_blank" class="nav-link">CALLS</a>
+                <a href="committee.html" target="_blank" class="nav-link">COMMITTEE</a>
+                <a href="keynote.html" target="_blank" class="nav-link border-b-2 nav-active-link" style="border-color: var(--primary-color); color: var(--primary-color);">KEYNOTE SPEAKERS</a>
+                <a href="authors.html" target="_blank" class="nav-link">AUTHORS</a>
+                <a href="workshops.html" target="_blank" class="nav-link">WORKSHOPS</a>
+                <a href="program.html" target="_blank" class="nav-link">PROGRAM</a>
+                <a href="registration.html" target="_blank" class="nav-link">REGISTRATION</a>
+                <a href="camera-ready.html" target="_blank" class="nav-link">FINAL CAMERA READY</a>
+                <a href="venue.html" target="_blank" class="nav-link">VENUE</a>
+                <a href="journal.html" target="_blank" class="nav-link">JOURNAL SPECIAL ISSUES</a>
+            </div>
+        </nav>
+
+        <section id="hero-sec" class="py-20 px-10 text-center" style="background-color: var(--header-footer-bg);">
+            <h1 contenteditable="true" class="text-5xl font-black mb-4 uppercase" style="color: var(--hero-text);">Keynote Speakers</h1>
+            <p contenteditable="true" class="text-xl font-light italic" style="color: var(--hero-sub-text);">Visionaries Shaping the Future</p>
+        </section>
+
+        <section id="main-content" class="py-20 px-10" style="background-color: var(--page-bg);">
+            <div class="max-w-7xl mx-auto">
+                <div id="speakers-container" class="grid md:grid-cols-2 gap-12">
+                    <div class="speaker-card shadow-sm group" id="speaker-1">
+                        <div class="admin-controls absolute top-4 right-4">
+                            <button onclick="deleteSpeaker('1')" class="bg-red-500 text-white p-1 rounded text-[10px] font-bold">Delete</button>
+                        </div>
+                        <div class="flex flex-col md:flex-row gap-8 items-center md:items-start">
+                            <div class="flex-shrink-0">
+                                <input type="file" id="spk-in-1" class="hidden" onchange="previewImage(this, 'spk-img-1')">
+                                <img id="spk-img-1" onclick="document.getElementById('spk-in-1').click()" src="https://via.placeholder.com/400x400?text=PHOTO" class="speaker-image shadow-lg cursor-pointer">
+                            </div>
+                            <div class="text-center md:text-left">
+                                <h3 contenteditable="true" class="text-2xl font-black mb-1 italic uppercase leading-none card-main-text">Prof. Johnathan Doe</h3>
+                                <p contenteditable="true" class="font-bold text-sm mb-4 uppercase tracking-widest org-accent" style="color: var(--primary-color)">JUST University, Jordan</p>
+                                <div contenteditable="true" class="opacity-80 text-sm italic mb-6 card-main-text">Expert in Artificial Intelligence.</div>
+                                <div class="card-inner-box p-4 rounded-xl border border-black/5" style="background-color: var(--card-box-bg);">
+                                    <span class="text-[10px] font-bold opacity-50 uppercase block mb-1 card-main-text">Keynote Title</span>
+                                    <p contenteditable="true" class="font-bold leading-tight card-main-text">The Future of AI</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-20 text-center" id="global-controls">
+                    <button onclick="addNewSpeaker()" id="add-btn" class="bg-white px-12 py-4 rounded-2xl font-black transition-all flex items-center gap-3 mx-auto border-2" 
+                            style="color: var(--primary-color); border-color: var(--primary-color);" 
+                            onmouseover="this.style.backgroundColor='var(--primary-color)'; this.style.color='white'" 
+                            onmouseout="this.style.backgroundColor='white'; this.style.color='var(--primary-color)'">
+                        ➕ ADD NEW SPEAKER
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section id="sponsors-section" class="py-12 px-10 border-t border-slate-100" style="background-color: var(--sponsors-bg);">
+            <div class="max-w-7xl mx-auto text-center">
+                <h2 contenteditable="true" class="text-sm font-black uppercase tracking-[0.3em] mb-8 opacity-40">Our Strategic Partners</h2>
+                <div id="sponsors-grid" class="flex flex-wrap justify-center items-center gap-12">
+                    <div class="relative group sponsor-item" id="sponsor-1">
+                        <div class="admin-controls absolute -top-4 -right-4 hidden group-hover:block">
+                            <button onclick="this.parentElement.parentElement.remove()" class="bg-red-500 text-white w-5 h-5 rounded-full text-[8px]">✕</button>
+                        </div>
+                        <input type="file" class="hidden" onchange="previewImage(this, 'sp-img-1')">
+                        <img id="sp-img-1" onclick="this.previousElementSibling.click()" src="https://via.placeholder.com/150x60?text=SPONSOR" class="sponsor-img">
+                    </div>
+                </div>
+                <div class="mt-8 admin-controls" id="sponsor-admin">
+                    <button onclick="addSponsor()" class="text-[10px] font-bold border px-4 py-1 rounded-full hover:bg-slate-50">+ Add Sponsor Logo</button>
+                </div>
+            </div>
+        </section>
+
+        <footer class="py-16 px-10 text-center" style="background-color: var(--header-footer-bg);">
+            <div contenteditable="true" class="text-2xl font-black mb-2 uppercase" style="color: var(--hero-text);">JUST Conference 2025</div>
+            <p contenteditable="true" class="text-sm italic" style="color: var(--hero-sub-text);">Irbid, Jordan</p>
+        </footer>
+    </div>
+
+    <script>
+        function updatePageTitle(val) {
+            document.title = val;
+            document.getElementById('dynamic-title').innerText = val;
+        }
+
+        function handleLogoUpload(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imgData = e.target.result;
+                    document.getElementById('logo-img').src = imgData;
+                    document.getElementById('favicon').href = imgData;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function togglePanel() {
+            const panel = document.getElementById('theme-panel');
+            const btn = document.getElementById('toggle-panel-btn');
+            panel.classList.toggle('hidden-panel');
+            btn.style.display = panel.classList.contains('hidden-panel') ? 'flex' : 'none';
+        }
+
+        function updateTheme() {
+            const primary = document.getElementById('color-primary').value;
+            const heroBg = document.getElementById('color-hero-footer').value;
+            const heroText = document.getElementById('color-hero-text').value;
+            const pageBg = document.getElementById('color-page-bg').value;
+            const cardBg = document.getElementById('color-card-bg').value;
+            const sponsorBg = document.getElementById('color-sponsors-bg').value;
+            const cardText = document.getElementById('color-card-text').value;
+            const cardBox = document.getElementById('color-card-box').value;
+
+            const root = document.documentElement;
+            root.style.setProperty('--primary-color', primary);
+            root.style.setProperty('--nav-bg', heroBg);
+            root.style.setProperty('--header-footer-bg', heroBg);
+            root.style.setProperty('--page-bg', pageBg);
+            root.style.setProperty('--card-bg', cardBg);
+            root.style.setProperty('--sponsors-bg', sponsorBg);
+            root.style.setProperty('--card-text', cardText);
+            root.style.setProperty('--card-box-bg', cardBox);
+            root.style.setProperty('--hero-text', heroText);
+            root.style.setProperty('--hero-sub-text', heroText + 'CC');
+
+            document.querySelectorAll('.org-accent').forEach(el => el.style.color = primary);
+            document.querySelectorAll('.card-main-text').forEach(el => el.style.color = cardText);
+            
+            const addBtn = document.getElementById('add-btn');
+            if(addBtn) {
+                addBtn.style.color = primary;
+                addBtn.style.borderColor = primary;
+            }
+
+            document.querySelectorAll('.nav-active-link').forEach(el => {
+                el.style.color = primary;
+                el.style.borderColor = primary;
+            });
+        }
+
+        let speakerCounter = 1;
+        let sponsorCounter = 1;
+
+        function previewImage(input, imgId) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => document.getElementById(imgId).src = e.target.result;
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function addNewSpeaker() {
+            speakerCounter++;
+            const container = document.getElementById('speakers-container');
+            const div = document.createElement('div');
+            div.className = 'speaker-card shadow-sm group';
+            div.id = `speaker-${speakerCounter}`;
+            div.style.backgroundColor = 'var(--card-bg)';
+            div.style.color = 'var(--card-text)';
+            div.innerHTML = `
+                <div class="absolute top-4 right-4 admin-controls">
+                    <button onclick="deleteSpeaker('${speakerCounter}')" class="bg-red-500 text-white p-1 rounded text-[10px] font-bold">Delete</button>
+                </div>
+                <div class="flex flex-col md:flex-row gap-8 items-center md:items-start">
+                    <div class="flex-shrink-0">
+                        <input type="file" id="spk-in-${speakerCounter}" class="hidden" onchange="previewImage(this, 'spk-img-${speakerCounter}')">
+                        <img id="spk-img-${speakerCounter}" onclick="document.getElementById('spk-in-${speakerCounter}').click()" 
+                             src="https://via.placeholder.com/400x400?text=PHOTO" class="speaker-image shadow-lg cursor-pointer">
+                    </div>
+                    <div class="text-center md:text-left">
+                        <h3 contenteditable="true" class="text-2xl font-black mb-1 italic uppercase leading-none card-main-text">New Speaker</h3>
+                        <p contenteditable="true" class="font-bold text-sm mb-4 uppercase tracking-widest org-accent" style="color: var(--primary-color)">Organization Name</p>
+                        <div contenteditable="true" class="opacity-80 text-sm italic mb-6 card-main-text">Biography...</div>
+                        <div class="card-inner-box p-4 rounded-xl border border-black/5" style="background-color: var(--card-box-bg);">
+                            <span class="text-[10px] font-bold opacity-50 uppercase block mb-1 card-main-text">Keynote Title</span>
+                            <p contenteditable="true" class="font-bold leading-tight card-main-text">Presentation Title</p>
+                        </div>
+                    </div>
+                </div>`;
+            container.appendChild(div);
+            updateTheme();
+        }
+
+        function addSponsor() {
+            sponsorCounter++;
+            const grid = document.getElementById('sponsors-grid');
+            const div = document.createElement('div');
+            div.className = 'relative group sponsor-item';
+            div.innerHTML = `
+                <div class="admin-controls absolute -top-4 -right-4 hidden group-hover:block">
+                    <button onclick="this.parentElement.parentElement.remove()" class="bg-red-500 text-white w-5 h-5 rounded-full text-[8px]">✕</button>
+                </div>
+                <input type="file" class="hidden" onchange="previewImage(this, 'sp-img-${sponsorCounter}')">
+                <img id="sp-img-${sponsorCounter}" onclick="this.previousElementSibling.click()" src="https://via.placeholder.com/150x60?text=SPONSOR" class="sponsor-img">
+            `;
+            grid.appendChild(div);
+        }
+
+        function deleteSpeaker(id) { if(confirm('Delete Speaker?')) document.getElementById(`speaker-${id}`).remove(); }
+
+        function downloadPage() {
+            const clone = document.documentElement.cloneNode(true);
+            
+            // Remove Admin UIs
+            clone.querySelector('#theme-panel').remove();
+            clone.querySelector('#toggle-panel-btn').remove();
+            clone.querySelector('#admin-ui').remove();
+            clone.querySelector('#global-controls').remove();
+            clone.querySelector('#sponsor-admin').remove();
+            
+            // Clean elements
+            clone.querySelectorAll('input[type="file"]').forEach(i => i.remove());
+            clone.querySelectorAll('.admin-controls').forEach(c => c.remove());
+            clone.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+            
+            // Navigation logic change: Remove target="_blank" after saving
+            clone.querySelectorAll('#main-nav a').forEach(a => a.removeAttribute('target'));
+            
+            const finalHTML = '<!DOCTYPE html>\n' + clone.outerHTML;
+            const blob = new Blob([finalHTML], { type: 'text/html' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'KEYNOTE_SPEAKERS.html';
+            a.click();
+        }
+    </script>
+</body>
+</html>

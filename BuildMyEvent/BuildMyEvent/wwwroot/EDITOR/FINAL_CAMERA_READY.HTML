@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="dynamic-title">Camera Ready Submission Guidelines Builder</title>
+    <link id="favicon" rel="icon" type="image/x-icon" href="https://via.placeholder.com/32">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style id="custom-theme-styles">
+        :root {
+            --primary-color: #6366f1;
+            --page-bg: #f8fafc;
+            /* Header */
+            --header-bg: #ffffff;
+            --header-text: #1e293b;
+            /* Navigation */
+            --nav-bg: #0f172a;
+            --nav-text: #ffffff;
+            /* Hero Section */
+            --hero-bg: #1e1b4b;
+            --hero-text: #ffffff;
+            /* Cards */
+            --card-bg: #ffffff;
+            --card-title: #0f172a;
+            --card-desc: #475569;
+            /* Sponsors */
+            --sponsors-bg: #ffffff;
+            /* Footer */
+            --footer-bg: #020617;
+            --footer-text: #94a3b8;
+        }
+
+        body { background-color: var(--page-bg); color: var(--card-title); transition: 0.3s; }
+        
+        #top-header { background-color: var(--header-bg); color: var(--header-text); }
+        #main-nav { background-color: var(--nav-bg); }
+        #hero-section { background-color: var(--hero-bg); color: var(--hero-text); }
+        #main-footer { background-color: var(--footer-bg); color: var(--footer-text); }
+        #sponsors-section { background-color: var(--sponsors-bg); }
+
+        .nav-link { 
+            color: var(--nav-text); 
+            font-weight: 600; font-size: 10px; text-transform: uppercase; 
+            white-space: nowrap; cursor: pointer; transition: 0.3s; opacity: 0.8;
+        }
+        .nav-link:hover { opacity: 1; color: var(--primary-color) !important; }
+        .nav-active { color: var(--primary-color) !important; border-bottom: 2px solid var(--primary-color); opacity: 1; }
+
+        [contenteditable]:focus { outline: none; background: #fffceb; border-radius: 4px; border: 1px solid var(--primary-color); }
+        
+        .guide-section { 
+            background: var(--card-bg); 
+            border-radius: 1.5rem; border: 1px solid #e2e8f0; 
+            padding: 2rem; margin-bottom: 2rem; transition: 0.3s; position: relative; 
+        }
+        .guide-section:hover { border-color: var(--primary-color); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        .guide-title { color: var(--card-title); }
+        .guide-text { color: var(--card-desc); }
+
+        .step-badge { background: var(--primary-color); color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-bottom: 1rem; }
+        
+        #theme-panel {
+            position: fixed; left: 15px; top: 140px; background: white; padding: 15px; 
+            border-radius: 12px; box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            z-index: 10000; width: 280px; border: 1px solid #e2e8f0; max-height: 75vh; overflow-y: auto;
+        }
+        .control-section { margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #f1f5f9; }
+        .control-section h5 { font-size: 10px; font-weight: 900; color: #4f46e5; margin-bottom: 8px; text-transform: uppercase; }
+        .input-group { margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+        .input-group label { font-size: 11px; font-weight: 600; color: #475569; }
+        input[type="color"] { width: 30px; height: 20px; border-radius: 4px; border: 1px solid #ddd; cursor: pointer; }
+        input[type="text"] { width: 100%; padding: 6px; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 11px; margin-top: 4px; }
+
+        .admin-controls { position: absolute; top: 15px; right: 15px; opacity: 0; transition: 0.5s; }
+        .guide-section:hover .admin-controls, .sponsor-item:hover .admin-controls { opacity: 1; }
+
+        .sponsor-item { position: relative; padding: 15px; transition: 0.5s; border: 1px dashed transparent; }
+        .sponsor-item:hover { border-color: var(--primary-color); border-radius: 10px; }
+    </style>
+</head>
+<body class="font-sans">
+
+    <div id="toggle-panel-btn" onclick="togglePanel()" style="position:fixed; left:15px; top:85px; z-index:10001; background:#4f46e5; color:white; width:45px; height:45px; border-radius:12px; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4); font-size: 20px;">🎨</div>
+
+    <div id="theme-panel" style="display:none;">
+        <div class="flex justify-between items-center mb-4">
+            <h4 class="text-xs font-black text-slate-800 uppercase">Page Controller</h4>
+            <span onclick="togglePanel()" class="cursor-pointer text-lg">×</span>
+        </div>
+        
+        <div class="control-section">
+            <h5>1. General Settings</h5>
+            <label class="text-[10px] font-bold">Browser Tab Title</label>
+            <input type="text" id="page-title-input" value="Camera Ready Submission" oninput="updatePageTitle(this.value)">
+            <div class="input-group mt-2"><label>Accent Color</label><input type="color" id="cp-primary" value="#6366f1" oninput="updateTheme()"></div>
+            <div class="input-group"><label>Page Background</label><input type="color" id="cp-page-bg" value="#f8fafc" oninput="updateTheme()"></div>
+            <div class="input-group"><label>Sponsors BG</label><input type="color" id="cp-sponsors-bg" value="#ffffff" oninput="updateTheme()"></div>
+        </div>
+
+        <div class="control-section">
+            <h5>2. Header & Navigation</h5>
+            <div class="input-group"><label>Header BG</label><input type="color" id="cp-header-bg" value="#ffffff" oninput="updateTheme()"></div>
+            <div class="input-group"><label>Header Text</label><input type="color" id="cp-header-text" value="#1e293b" oninput="updateTheme()"></div>
+            <div class="input-group"><label>Nav Bar BG</label><input type="color" id="cp-nav-bg" value="#0f172a" oninput="updateTheme()"></div>
+            <div class="input-group"><label>Nav Links Text</label><input type="color" id="cp-nav-text" value="#ffffff" oninput="updateTheme()"></div>
+        </div>
+
+        <div class="control-section">
+            <h5>3. Hero Section</h5>
+            <div class="input-group"><label>Hero BG</label><input type="color" id="cp-hero-bg" value="#1e1b4b" oninput="updateTheme()"></div>
+            <div class="input-group"><label>Hero Text</label><input type="color" id="cp-hero-text" value="#ffffff" oninput="updateTheme()"></div>
+        </div>
+
+        <div class="control-section">
+            <h5>4. Instruction Cards</h5>
+            <div class="input-group"><label>Card BG</label><input type="color" id="cp-card-bg" value="#ffffff" oninput="updateTheme()"></div>
+            <div class="input-group"><label>Card Title</label><input type="color" id="cp-card-title" value="#0f172a" oninput="updateTheme()"></div>
+            <div class="input-group"><label>Card Text</label><input type="color" id="cp-card-desc" value="#475569" oninput="updateTheme()"></div>
+        </div>
+
+        <div class="control-section">
+            <h5>5. Footer</h5>
+            <div class="input-group"><label>Footer BG</label><input type="color" id="cp-footer-bg" value="#020617" oninput="updateTheme()"></div>
+            <div class="input-group"><label>Footer Text</label><input type="color" id="cp-footer-text" value="#94a3b8" oninput="updateTheme()"></div>
+        </div>
+    </div>
+
+    <div id="capture-area">
+        <div id="top-header" class="py-4 px-10 flex justify-between items-center border-b border-slate-100 transition-colors">
+            <div class="flex items-center gap-4">
+                <input type="file" id="logo-input" class="hidden" onchange="handleLogoUpload(this)">
+                <img id="logo-img" onclick="document.getElementById('logo-input').click()" 
+                     src="https://via.placeholder.com/200x50?text=UPLOAD+LOGO" 
+                     class="h-10 cursor-pointer object-contain">
+            </div>
+            <div class="text-right">
+                <p contenteditable="true" class="text-xs font-bold uppercase tracking-widest italic" style="color: var(--primary-color)">Publication Center</p>
+                <p contenteditable="true" class="text-sm font-semibold italic">IEEE Compliance Guidelines</p>
+            </div>
+        </div>
+
+        <nav id="main-nav" class="py-3 px-6 sticky top-0 z-50 shadow-lg transition-colors">
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="HOME.html" target="_blank" class="nav-link" data-final="HOME.html">HOME</a>
+                <a href="CALLS.html" target="_blank" class="nav-link" data-final="CALLS.html">CALLS</a>
+                <a href="COMMITTEE.html" target="_blank" class="nav-link" data-final="COMMITTEE.html">COMMITTEE</a>
+                <a href="KEYNOTE_SPEAKERS.html" target="_blank" class="nav-link" data-final="KEYNOTE_SPEAKERS.html">KEYNOTE SPEAKERS</a>
+                <a href="AUTHORS.html" target="_blank" class="nav-link" data-final="AUTHORS.html">AUTHORS</a>
+                <a href="WORKSHOPS.html" target="_blank" class="nav-link" data-final="WORKSHOPS.html">WORKSHOPS</a>
+                <a href="PROGRAM.html" target="_blank" class="nav-link" data-final="PROGRAM.html">PROGRAM</a>
+                <a href="REGISTRATION.html" target="_blank" class="nav-link" data-final="REGISTRATION.html">REGISTRATION</a>
+                <a href="FINAL_CAMERA_READY.html" target="_blank" class="nav-link nav-active" data-final="FINAL_CAMERA_READY.html">FINAL CAMERA READY</a>
+                <a href="VENUE.html" target="_blank" class="nav-link" data-final="VENUE.html">VENUE</a>
+                <a href="JOURNAL_SPECIAL_ISSUES.html" target="_blank" class="nav-link" data-final="JOURNAL_SPECIAL_ISSUES.html">JOURNAL SPECIAL ISSUES</a>
+            </div>
+        </nav>
+
+        <section id="hero-section" class="py-16 px-10 text-center transition-colors border-b border-white/10">
+            <div contenteditable="true" class="bg-red-500 text-white inline-block px-6 py-1 rounded-full text-xs font-bold mb-4 animate-pulse">
+                DEADLINE: AUGUST 15, 2026
+            </div>
+            <h1 contenteditable="true" class="text-4xl md:text-5xl font-black mb-4 uppercase tracking-tighter italic">Final Camera Ready Submission</h1>
+            <p contenteditable="true" class="max-w-3xl mx-auto text-sm leading-relaxed italic opacity-80">
+                Essential instructions to comply with IEEE publication requirements. Ensure all reviewer comments are addressed for inclusion in IEEE Xplore.
+            </p>
+        </section>
+
+        <main class="max-w-4xl mx-auto py-12 px-6">
+            <div id="guidelines-container">
+                <div class="guide-section" id="guide-1">
+                    <div class="admin-controls"><button onclick="deleteElement('guide-1')" class="text-red-500 font-bold">✕</button></div>
+                    <div class="step-badge">1</div>
+                    <h2 contenteditable="true" class="guide-title text-xl font-bold mb-3 uppercase italic">Manuscript Format and Length</h2>
+                    <div contenteditable="true" class="guide-text text-sm space-y-3 leading-relaxed">
+                        <p>Manuscripts must be submitted through the PayQlick System. Length limits: Full Papers (8 Pages), Short Papers (6 Pages).</p>
+                        <p class="bg-yellow-50 p-3 rounded-lg border border-yellow-200 text-yellow-800 italic font-medium">⚠️ DO NOT include headers/footers or page numbers.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-12 text-center" id="admin-actions">
+                <button onclick="addGuideSection()" class="bg-slate-200 text-slate-600 px-8 py-3 rounded-xl font-bold hover:bg-indigo-600 hover:text-white transition shadow-sm">
+                    ➕ Add Instruction Step
+                </button>
+            </div>
+
+            <div id="cta-section" class="rounded-3xl p-10 text-center text-white shadow-2xl transition-all" style="background-color: var(--primary-color)">
+                <h2 contenteditable="true" class="text-2xl font-black mb-4 uppercase italic">Ready for Submission?</h2>
+                <p contenteditable="true" class="text-sm mb-8 opacity-90">Upload your IEEE PDF Express Certified manuscript below.</p>
+                <button onclick="openUploadModal()" class="bg-white px-12 py-4 rounded-2xl font-black uppercase tracking-widest hover:scale-105 transition shadow-xl" style="color: var(--primary-color)">
+                    Open Submission Portal
+                </button>
+            </div>
+
+            <div id="sponsors-section" class="mt-20 py-10 rounded-3xl transition-colors">
+                <div class="flex justify-between items-center mb-8 px-8">
+                    <h2 contenteditable="true" class="text-xl font-black uppercase italic opacity-70">Our Sponsors</h2>
+                    <button id="add-sponsor-btn" onclick="addSponsor()" class="bg-slate-800 text-white px-4 py-1 rounded-lg text-[10px] font-bold">➕ ADD SPONSOR</button>
+                </div>
+                <div id="sponsors-grid" class="flex flex-wrap justify-center items-center gap-50 px-20">
+                    <div class="sponsor-item" id="sp-1">
+                        <div class="admin-controls"><button onclick="deleteElement('sp-1')" class="text-red-500 font-bold">✕</button></div>
+                        <input type="file" class="hidden" onchange="handleSponsorUpload(this)">
+                        <img onclick="this.previousElementSibling.click()" src="https://via.placeholder.com/150x60?text=SPONSOR" class="h-12 grayscale hover:grayscale-0 cursor-pointer transition object-contain">
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer id="main-footer" class="py-12 px-10 text-center border-t transition-colors">
+            <div contenteditable="true" class="text-xl font-bold mb-2 uppercase italic tracking-widest">Conference 2025</div>
+            <p contenteditable="true" class="text-xs italic opacity-60">For support, contact: publication@conference.org</p>
+        </footer>
+    </div>
+
+    <div id="upload-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:10000; align-items:center; justify-content:center;">
+        <div class="bg-white p-8 rounded-3xl w-90 max-w-[500px]">
+            <div class="flex justify-between items-center mb-6 border-b pb-2">
+                <h3 class="font-black text-indigo-600 uppercase italic">PayQlick Submission</h3>
+                <button onclick="closeUploadModal()" class="text-slate-400 hover:text-red-500">✕</button>
+            </div>
+            <div class="space-y-4">
+                <input type="file" class="w-full text-xs border p-2 rounded bg-slate-50">
+                <button onclick="alert('System Offline')" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold uppercase italic">Upload to System</button>
+            </div>
+        </div>
+    </div>
+
+    <div style="position:fixed; bottom:30px; right:30px; z-index:9999;" id="save-btn-container">
+        <button onclick="downloadPage()" class="bg-indigo-600 hover:scale-105 text-white px-8 py-4 rounded-2xl font-black shadow-2xl transition-all border-4 border-white/20 uppercase">
+            SAVE FINAL_CAMERA_READY 📥
+        </button>
+    </div>
+
+    <script>
+        let guideCount = 1;
+        let sponsorCount = 1;
+
+        function togglePanel() {
+            const panel = document.getElementById('theme-panel');
+            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function updatePageTitle(val) { document.title = val; }
+
+        function updateTheme() {
+            const root = document.documentElement;
+            root.style.setProperty('--primary-color', document.getElementById('cp-primary').value);
+            root.style.setProperty('--page-bg', document.getElementById('cp-page-bg').value);
+            root.style.setProperty('--header-bg', document.getElementById('cp-header-bg').value);
+            root.style.setProperty('--header-text', document.getElementById('cp-header-text').value);
+            root.style.setProperty('--nav-bg', document.getElementById('cp-nav-bg').value);
+            root.style.setProperty('--nav-text', document.getElementById('cp-nav-text').value);
+            root.style.setProperty('--hero-bg', document.getElementById('cp-hero-bg').value);
+            root.style.setProperty('--hero-text', document.getElementById('cp-hero-text').value);
+            root.style.setProperty('--card-bg', document.getElementById('cp-card-bg').value);
+            root.style.setProperty('--card-title', document.getElementById('cp-card-title').value);
+            root.style.setProperty('--card-desc', document.getElementById('cp-card-desc').value);
+            root.style.setProperty('--footer-bg', document.getElementById('cp-footer-bg').value);
+            root.style.setProperty('--footer-text', document.getElementById('cp-footer-text').value);
+            root.style.setProperty('--sponsors-bg', document.getElementById('cp-sponsors-bg').value);
+        }
+
+        function handleLogoUpload(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    document.getElementById('logo-img').src = e.target.result;
+                    document.getElementById('favicon').href = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function handleSponsorUpload(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => input.nextElementSibling.src = e.target.result;
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function addSponsor() {
+            sponsorCount++;
+            const grid = document.getElementById('sponsors-grid');
+            const div = document.createElement('div');
+            div.className = 'sponsor-item';
+            div.id = `sp-${sponsorCount}`;
+            div.innerHTML = `
+                <div class="admin-controls"><button onclick="deleteElement('sp-${sponsorCount}')" class="text-red-500 font-bold">✕</button></div>
+                <input type="file" class="hidden" onchange="handleSponsorUpload(this)">
+                <img onclick="this.previousElementSibling.click()" src="https://via.placeholder.com/150x60?text=SPONSOR" class="h-12 grayscale hover:grayscale-0 cursor-pointer transition object-contain">
+            `;
+            grid.appendChild(div);
+        }
+
+        function addGuideSection() {
+            guideCount++;
+            const container = document.getElementById('guidelines-container');
+            const div = document.createElement('div');
+            div.className = 'guide-section';
+            div.id = `guide-${guideCount}`;
+            div.innerHTML = `
+                <div class="admin-controls"><button onclick="deleteElement('guide-${guideCount}')" class="text-red-500 font-bold">✕</button></div>
+                <div class="step-badge">${guideCount}</div>
+                <h2 contenteditable="true" class="guide-title text-xl font-bold mb-3 uppercase italic">New Guideline Step</h2>
+                <div contenteditable="true" class="guide-text text-sm italic leading-relaxed">Enter instructions here.</div>
+            `;
+            container.appendChild(div);
+        }
+
+        function deleteElement(id) { if(confirm('Delete this?')) document.getElementById(id).remove(); }
+        function openUploadModal() { document.getElementById('upload-modal').style.display = 'flex'; }
+        function closeUploadModal() { document.getElementById('upload-modal').style.display = 'none'; }
+
+        function downloadPage() {
+            const clone = document.documentElement.cloneNode(true);
+            clone.querySelector('#theme-panel').remove();
+            clone.querySelector('#toggle-panel-btn').remove();
+            clone.querySelector('#admin-actions').remove();
+            clone.querySelector('#save-btn-container').remove();
+            clone.querySelector('#add-sponsor-btn').remove();
+            clone.querySelectorAll('.admin-controls').forEach(el => el.remove());
+            clone.querySelectorAll('input[type="file"]').forEach(el => el.remove());
+            
+            clone.querySelectorAll('.nav-link').forEach(link => {
+                const final = link.getAttribute('data-final');
+                if(final) { link.setAttribute('href', final); link.removeAttribute('target'); link.removeAttribute('data-final'); }
+            });
+
+            clone.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+
+            const finalHTML = '<!DOCTYPE html>\n' + clone.outerHTML;
+            const blob = new Blob([finalHTML], { type: 'text/html' });
+            const a = document.createElement('a');
+            a.href = window.URL.createObjectURL(blob);
+            a.download = 'FINAL_CAMERA_READY.html';
+            a.click();
+        }
+    </script>
+</body>
+</html>

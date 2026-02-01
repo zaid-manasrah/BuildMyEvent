@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="dynamic-title">Dynamic Committee Builder</title>
+    <link id="favicon" rel="icon" type="image/x-icon" href="https://via.placeholder.com/32">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style id="custom-theme-styles">
+        :root {
+            /* 1. Top Header */
+            --top-header-bg: #ffffff;
+            --top-header-text: #4f46e5;
+            --top-header-border: #f1f5f9;
+            
+            /* 2. Navigation & Identity */
+            --bg-nav-footer: #0f172a;
+            --nav-link-color: #ffffff;
+            --primary-color: #6366f1;
+            
+            /* 3. Hero & Content */
+            --bg-main: #ffffff;
+            --bg-section: #f8fafc;
+            --bg-sponsors: #f1f5f9;
+            --text-hero: #0f172a;
+            
+            /* 4. Member Cards */
+            --card-bg: #ffffff;
+            --card-hover-bg: #f1f5f9;
+            --card-border: #6366f1;
+            --card-name: #1e293b;
+            --card-uni: #64748b;
+
+            /* 5. Footer Specific */
+            --footer-text-main: #ffffff;
+            --footer-text-sub: #94a3b8;
+        }
+
+        body { background-color: var(--bg-main); transition: 0.3s; }
+        
+        #top-header { background-color: var(--top-header-bg); border-bottom: 1px solid var(--top-header-border); }
+
+        [contenteditable]:focus { outline: 2px solid var(--primary-color); background: rgba(0,0,0,0.02); border-radius: 4px; }
+        
+        .nav-link { 
+            color: var(--nav-link-color) !important; 
+            font-weight: 600; 
+            font-size: 10px; 
+            text-transform: uppercase; 
+            white-space: nowrap; 
+            transition: 0.3s; 
+            opacity: 0.8;
+        }
+        .nav-link:hover { opacity: 1; color: var(--primary-color) !important; }
+
+        .committee-group { position: relative; border: 1px solid transparent; transition: 0.3s; padding: 20px; border-radius: 15px; }
+        .committee-group:hover { border-color: var(--primary-color); background: var(--bg-section); }
+        
+        .admin-controls { display: flex; gap: 5px; position: absolute; top: 10px; right: 10px; opacity: 0; transition: 0.3s; z-index: 10; }
+        .committee-group:hover .admin-controls, .sponsor-item:hover .admin-controls { opacity: 1; }
+        
+        .member-card { 
+            background: var(--card-bg); 
+            border-left: 4px solid var(--card-border); 
+            padding: 15px; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+            transition: all 0.3s ease;
+        }
+        .member-card:hover {
+            background: var(--card-hover-bg);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .member-name { color: var(--card-name); font-weight: 700; }
+        .member-uni { color: var(--card-uni); font-size: 0.75rem; text-transform: uppercase; font-weight: 500; }
+
+        #theme-panel {
+            position: fixed; left: 15px; top: 80px; background: white; padding: 15px; 
+            border-radius: 12px; box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            z-index: 10000; width: 260px; border: 1px solid #e2e8f0; max-height: 75vh; overflow-y: auto;
+        }
+        .control-section { margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid #f1f5f9; }
+        .control-section h5 { font-size: 9px; font-weight: 900; color: #4f46e5; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        .input-group { margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+        .input-group label { font-size: 10px; font-weight: 600; color: #475569; }
+        input[type="color"] { width: 30px; height: 18px; border-radius: 3px; border: 1px solid #e2e8f0; cursor: pointer; padding: 0; }
+        input[type="text"] { width: 100%; padding: 6px; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 11px; margin-top: 4px; }
+
+        /* Sponsors Specific */
+        #sponsors-section { background-color: var(--bg-sponsors); transition: 0.3s; }
+        .sponsor-item { position: relative; transition: 0.3s; }
+        .sponsor-img { height: 60px; object-fit: contain; cursor: pointer; filter: grayscale(100%); transition: 0.3s; }
+        .sponsor-img:hover { filter: grayscale(0%); transform: scale(1.05); }
+    </style>
+</head>
+<body class="font-sans">
+
+    <div id="toggle-panel-btn" onclick="togglePanel()" style="position:fixed; left:15px; top:25px; z-index:10001; background:#4f46e5; color:white; width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);">🎨</div>
+
+    <div id="theme-panel" style="display:none;">
+        <div class="flex justify-between items-center mb-3 border-b pb-1">
+            <h4 class="text-[10px] font-black text-slate-800 tracking-tighter">CUSTOMIZER</h4>
+            <span onclick="togglePanel()" class="cursor-pointer text-sm font-bold text-slate-400 hover:text-red-500">✕</span>
+        </div>
+        
+        <div class="control-section">
+            <h5>1. Browser</h5>
+            <input type="text" id="tab-title-input" placeholder="Page Tab Title" oninput="updatePageTitle(this.value)">
+        </div>
+
+        <div class="control-section">
+            <h5>2. Top Header Style</h5>
+            <div class="input-group"><label>Background</label><input type="color" id="color-top-bg" value="#ffffff" oninput="updateTheme()"></div>
+            <div class="input-group"><label>Label Text</label><input type="color" id="color-top-text" value="#4f46e5" oninput="updateTheme()"></div>
+            <div class="input-group"><label>Border Color</label><input type="color" id="color-top-border" value="#f1f5f9" oninput="updateTheme()"></div>
+        </div>
+
+        <div class="control-section">
+            <h5>3. Nav & Identity</h5>
+            <div class="input-group"><label>Navbar Background</label><input type="color" id="color-bg-nav" value="#0f172a" oninput="updateTheme()"></div>
+            <div class="input-group"><label>Nav Text Color</label><input type="color" id="color-nav-text" value="#ffffff" oninput="updateTheme()"></div>
+            <div class="input-group"><label>Accent Color</label><input type="color" id="color-primary" value="#6366f1" oninput="updateTheme()"></div>
+        </div>
+
+        <div class="control-section">
+            <h5>4. Main Content Area</h5>
+            <div class="input-group"><label>Page Background</label><input type="color" id="color-bg-main" value="#ffffff" oninput="updateTheme()"></div>
+            <div class="input-group"><label>Hero Section BG</label><input type="color" id="color-bg-section" value="#f8fafc" oninput="updateTheme()"></div>
+            <div class="input-group"><label>Sponsors BG</label><input type="color" id="color-bg-sponsors" value="#f1f5f9" oninput="updateTheme()"></div>
+            <div class="input-group"><label>Main Headlines</label><input type="color" id="color-text-hero" value="#0f172a" oninput="updateTheme()"></div>
+        </div>
+
+        <div class="control-section">
+            <h5>5. Committee Cards</h5>
+            <div class="input-group"><label>Card Background</label><input type="color" id="color-card-bg" value="#ffffff" oninput="updateTheme()"></div>
+            <div class="input-group"><label>Card Hover BG</label><input type="color" id="color-card-hover" value="#f1f5f9" oninput="updateTheme()"></div>
+            <div class="input-group"><label>Left Border Line</label><input type="color" id="color-card-border" value="#6366f1" oninput="updateTheme()"></div>
+            <div class="input-group"><label>Member Name</label><input type="color" id="color-card-name" value="#1e293b" oninput="updateTheme()"></div>
+            <div class="input-group"><label>University/Affil.</label><input type="color" id="color-card-uni" value="#64748b" oninput="updateTheme()"></div>
+        </div>
+
+        <div class="control-section">
+            <h5>6. Footer Style</h5>
+            <div class="input-group"><label>Main Text</label><input type="color" id="color-footer-main" value="#ffffff" oninput="updateTheme()"></div>
+            <div class="input-group"><label>Subtext Color</label><input type="color" id="color-footer-sub" value="#94a3b8" oninput="updateTheme()"></div>
+        </div>
+    </div>
+
+    <div id="capture-area">
+        <div id="top-header" class="py-4 px-10 flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <input type="file" id="logo-input" class="hidden" onchange="handleLogoUpload(this)">
+                <img id="logo-img" onclick="document.getElementById('logo-input').click()" 
+                     src="https://via.placeholder.com/200x50?text=UPLOAD+LOGO" 
+                     class="h-10 cursor-pointer object-contain">
+            </div>
+            <div class="text-right">
+                <p contenteditable="true" class="text-xs font-bold uppercase tracking-widest" style="color: var(--top-header-text)">Submission Deadline:</p>
+                <p contenteditable="true" class="text-sm font-semibold italic text-slate-800">September 30, 2026</p>
+            </div>
+        </div>
+
+        <nav class="py-3 px-4 sticky top-0 z-50 shadow-lg" style="background-color: var(--bg-nav-footer);">
+            <div class="flex flex-wrap justify-center gap-x-5 gap-y-2">
+                <a href="HOME.html" target="_blank" class="nav-link">HOME</a>
+                <a href="CALLS.html" target="_blank" class="nav-link">CALLS</a>
+                <a href="COMMITTEE.html" target="_blank" class="nav-link !opacity-100 border-b-2" style="border-color: var(--primary-color); color: var(--primary-color) !important;">COMMITTEE</a>
+                <a href="KEYNOTE_SPEAKERS.html" target="_blank" class="nav-link">KEYNOTE SPEAKERS</a>
+                <a href="AUTHORS.html" target="_blank" class="nav-link">AUTHORS</a>
+                <a href="WORKSHOPS.html" target="_blank" class="nav-link">WORKSHOPS</a>
+                <a href="PROGRAM.html" target="_blank" class="nav-link">PROGRAM</a>
+                <a href="REGISTRATION.html" target="_blank" class="nav-link">REGISTRATION</a>
+                <a href="FINAL_CAMERA_READY.html" target="_blank" class="nav-link">FINAL CAMERA READY</a>
+                <a href="VENUE.html" target="_blank" class="nav-link">VENUE</a>
+                <a href="JOURNAL_SPECIAL_ISSUES.html" target="_blank" class="nav-link">JOURNAL SPECIAL ISSUES</a>
+            </div>
+        </nav>
+
+        <section class="py-16 px-10 text-center border-b border-slate-200" style="background-color: var(--bg-section);">
+            <div class="max-w-4xl mx-auto">
+                <h1 contenteditable="true" class="text-4xl font-black mb-2 uppercase tracking-tight" style="color: var(--text-hero)">Conference Committees</h1>
+                <div class="w-20 h-1 mx-auto" style="background-color: var(--primary-color)"></div>
+            </div>
+        </section>
+
+        <div id="committee-master-list" class="max-w-6xl mx-auto py-12 px-6 space-y-12"></div>
+
+        <div class="max-w-6xl mx-auto px-6 pb-12 text-center" id="global-controls">
+            <button onclick="addNewCommitteeGroup('New Committee Group')" class="px-8 py-3 rounded-2xl font-bold transition flex items-center gap-2 mx-auto" style="background-color: var(--bg-section); color: var(--primary-color); border: 1px solid var(--primary-color);">
+                ➕ ADD NEW COMMITTEE SECTION
+            </button>
+        </div>
+
+        <section id="sponsors-section" class="py-12 px-6 border-t border-b border-slate-100">
+            <div class="max-w-6xl mx-auto">
+                <div class="flex justify-between items-center mb-8">
+                    <h3 contenteditable="true" class="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Our Partners & Sponsors</h3>
+                    <button onclick="addSponsor()" id="add-sponsor-btn" class="text-[9px] font-bold bg-white px-3 py-1 rounded shadow-sm border">+ ADD SPONSOR</button>
+                </div>
+                <div id="sponsors-grid" class="flex flex-wrap justify-center items-center gap-10">
+                    <div class="sponsor-item">
+                        <div class="admin-controls">
+                            <button onclick="this.closest('.sponsor-item').remove()" class="bg-red-500 text-white px-1 rounded text-[8px]">✕</button>
+                        </div>
+                        <input type="file" class="hidden" onchange="previewSponsor(this)">
+                        <img onclick="this.previousElementSibling.click()" src="https://via.placeholder.com/150x60?text=SPONSOR+LOGO" class="sponsor-img">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="py-16 px-10 text-center border-t" style="background-color: var(--bg-nav-footer); border-color: var(--primary-color);">
+            <div contenteditable="true" class="text-2xl font-black mb-4 italic uppercase" style="color: var(--footer-text-main)">Conference Name 2026</div>
+            <p contenteditable="true" class="text-sm italic" style="color: var(--footer-text-sub)">Organizing the Future of Technology</p>
+        </footer>
+    </div>
+
+    <div style="position:fixed; bottom:30px; right:30px; z-index:9999;">
+        <button onclick="downloadPage()" class="hover:scale-105 text-white px-8 py-4 rounded-2xl font-black shadow-2xl flex items-center gap-3 transition-all" style="background-color: var(--primary-color);">
+            DOWNLOAD PAGE 📥
+        </button>
+    </div>
+
+    <script>
+        let groupCounter = 0;
+
+        // تم إلغاء المجموعات الافتراضية - الصفحة ستبدأ فارغة تماماً كما طلبت
+        window.onload = () => { };
+
+        function togglePanel() {
+            const panel = document.getElementById('theme-panel');
+            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function updatePageTitle(val) {
+            document.title = val;
+            document.getElementById('dynamic-title').innerText = val;
+        }
+
+        function updateTheme() {
+            const root = document.documentElement;
+            root.style.setProperty('--top-header-bg', document.getElementById('color-top-bg').value);
+            root.style.setProperty('--top-header-text', document.getElementById('color-top-text').value);
+            root.style.setProperty('--top-header-border', document.getElementById('color-top-border').value);
+            root.style.setProperty('--bg-nav-footer', document.getElementById('color-bg-nav').value);
+            root.style.setProperty('--nav-link-color', document.getElementById('color-nav-text').value);
+            root.style.setProperty('--primary-color', document.getElementById('color-primary').value);
+            root.style.setProperty('--bg-main', document.getElementById('color-bg-main').value);
+            root.style.setProperty('--bg-section', document.getElementById('color-bg-section').value);
+            root.style.setProperty('--bg-sponsors', document.getElementById('color-bg-sponsors').value);
+            root.style.setProperty('--text-hero', document.getElementById('color-text-hero').value);
+            root.style.setProperty('--card-bg', document.getElementById('color-card-bg').value);
+            root.style.setProperty('--card-hover-bg', document.getElementById('color-card-hover').value);
+            root.style.setProperty('--card-border', document.getElementById('color-card-border').value);
+            root.style.setProperty('--card-name', document.getElementById('color-card-name').value);
+            root.style.setProperty('--card-uni', document.getElementById('color-card-uni').value);
+            root.style.setProperty('--footer-text-main', document.getElementById('color-footer-main').value);
+            root.style.setProperty('--footer-text-sub', document.getElementById('color-footer-sub').value);
+        }
+
+        function handleLogoUpload(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    document.getElementById('logo-img').src = e.target.result;
+                    document.getElementById('favicon').href = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function addNewCommitteeGroup(title) {
+            groupCounter++;
+            const masterList = document.getElementById('committee-master-list');
+            const groupDiv = document.createElement('div');
+            groupDiv.className = 'committee-group';
+            groupDiv.id = `group-${groupCounter}`;
+            groupDiv.innerHTML = `
+                <div class="admin-controls">
+                    <button onclick="addMember('${groupCounter}')" class="bg-green-500 text-white px-2 py-1 rounded text-[9px] font-bold uppercase">Add Member</button>
+                    <button onclick="removeLastMember('${groupCounter}')" class="bg-orange-500 text-white px-2 py-1 rounded text-[9px] font-bold uppercase">Del Member</button>
+                    <button onclick="deleteGroup('${groupCounter}')" class="bg-red-600 text-white px-2 py-1 rounded text-[9px] font-bold uppercase">Delete Section</button>
+                </div>
+                <h2 contenteditable="true" class="text-2xl font-bold mb-8 border-b-2 inline-block pb-1 uppercase tracking-wider" style="color: var(--text-hero); border-color: var(--primary-color);">${title}</h2>
+                <div id="members-grid-${groupCounter}" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="member-card">
+                        <p contenteditable="true" class="member-name">New Member Name</p>
+                        <p contenteditable="true" class="member-uni">University/Affiliation</p>
+                    </div>
+                </div>
+            `;
+            masterList.appendChild(groupDiv);
+        }
+
+        function addMember(groupId) {
+            const grid = document.getElementById(`members-grid-${groupId}`);
+            const memberDiv = document.createElement('div');
+            memberDiv.className = 'member-card';
+            memberDiv.innerHTML = `
+                <p contenteditable="true" class="member-name">New Member Name</p>
+                <p contenteditable="true" class="member-uni">Affiliation Details</p>
+            `;
+            grid.appendChild(memberDiv);
+        }
+
+        function removeLastMember(groupId) {
+            const grid = document.getElementById(`members-grid-${groupId}`);
+            if (grid.children.length > 1) grid.removeChild(grid.lastChild);
+        }
+
+        function deleteGroup(groupId) {
+            if (confirm('Delete this entire section?')) document.getElementById(`group-${groupId}`).remove();
+        }
+
+        function addSponsor() {
+            const grid = document.getElementById('sponsors-grid');
+            const sponsorDiv = document.createElement('div');
+            sponsorDiv.className = 'sponsor-item';
+            sponsorDiv.innerHTML = `
+                <div class="admin-controls">
+                    <button onclick="this.closest('.sponsor-item').remove()" class="bg-red-500 text-white px-1 rounded text-[8px]">✕</button>
+                </div>
+                <input type="file" class="hidden" onchange="previewSponsor(this)">
+                <img onclick="this.previousElementSibling.click()" src="https://via.placeholder.com/150x60?text=SPONSOR+LOGO" class="sponsor-img">
+            `;
+            grid.appendChild(sponsorDiv);
+        }
+
+        function previewSponsor(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => { input.nextElementSibling.src = e.target.result; };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function downloadPage() {
+            const clone = document.documentElement.cloneNode(true);
+            
+            // تنظيف النسخة المحملة
+            const selectorsToRemove = [
+                '#theme-panel', 
+                '#toggle-panel-btn', 
+                '#global-controls', 
+                '#add-sponsor-btn',
+                'div[style*="bottom:30px"]',
+                '.admin-controls'
+            ];
+            selectorsToRemove.forEach(sel => {
+                clone.querySelectorAll(sel).forEach(el => el.remove());
+            });
+
+            clone.querySelectorAll('button').forEach(btn => btn.remove());
+            clone.querySelectorAll('input').forEach(inp => inp.remove());
+            
+            clone.querySelectorAll('.nav-link').forEach(link => {
+                link.removeAttribute('target');
+            });
+
+            clone.querySelectorAll('[contenteditable]').forEach(el => {
+                el.removeAttribute('contenteditable');
+            });
+
+            clone.querySelectorAll('img').forEach(img => {
+                img.removeAttribute('onclick');
+                img.style.cursor = 'default';
+            });
+
+            const finalHTML = '<!DOCTYPE html>\n' + clone.outerHTML;
+            const blob = new Blob([finalHTML], { type: 'text/html' });
+            const a = document.createElement('a');
+            a.href = window.URL.createObjectURL(blob);
+            a.download = 'COMMITTEE.html';
+            a.click();
+        }
+    </script>
+</body>
+</html>

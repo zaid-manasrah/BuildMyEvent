@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-ptr-title">Registration & Camera Ready Builder</title>
+    <link id="favicon-link" rel="icon" type="image/x-icon" href="https://via.placeholder.com/32">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style id="theme-vars">
+        :root {
+            --accent-color: #6366f1;
+            --page-bg: #f8fafc;
+            --header-bg: #ffffff;
+            --header-text: #4f46e5;
+            --nav-bg: #0f172a;
+            --nav-text: #ffffff;
+            --hero-bg: #1e1b4b;
+            --hero-text: #ffffff;
+            --hero-subtitle: #c7d2fe;
+            --card-bg: #ffffff;
+            --card-title: #1e293b;
+            --price-list-text: #64748b;
+            --cr-section-bg: #ffffff;
+            --cr-title-color: #6366f1;
+            --cr-step-bg: #6366f1;
+            --cr-step-text: #ffffff;
+            --footer-bg: #020617;
+            --footer-text: #94a3b8;
+            --sub-bg: #0f172a;
+            --sub-text: #94a3b8;
+            --sub-btn-bg: #6366f1;
+            --sub-btn-text: #ffffff;
+            --sponsors-bg: #f8fafc; /* خلفية الرعاة الافتراضية */
+        }
+
+        body { background-color: var(--page-bg); color: #64748b; transition: 0.3s; }
+        .nav-link { color: var(--nav-text); font-weight: 600; font-size: 10px; text-transform: uppercase; white-space: nowrap; cursor: pointer; transition: 0.3s; opacity: 0.8; }
+        .nav-link:hover { color: var(--accent-color) !important; opacity: 1; }
+        [contenteditable]:focus { outline: none; background: rgba(99, 102, 241, 0.05); border-radius: 8px; box-shadow: 0 0 0 2px var(--accent-color); }
+        .price-card { background: var(--card-bg); transition: all 0.3s ease; border: 1px solid #e2e8f0; }
+        .price-card:hover { transform: translateY(-5px); border-color: var(--accent-color); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        .instruction-step { position: relative; padding-left: 3rem; margin-bottom: 1.5rem; }
+        .step-number { position: absolute; left: 0; top: 0; width: 2rem; height: 2rem; background: var(--cr-step-bg); color: var(--cr-step-text); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem; }
+        
+        #theme-controller { 
+            position: fixed; left: 15px; top: 140px; background: white; padding: 15px; 
+            border-radius: 12px; box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            z-index: 10000; width: 300px; border: 1px solid #e2e8f0; max-height: 75vh; overflow-y: auto;
+            display: none; 
+        }
+        .control-group { margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #f1f5f9; }
+        .control-group h5 { font-size: 10px; font-weight: 900; color: #4f46e5; margin-bottom: 8px; text-transform: uppercase; }
+        .input-row { margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+        .input-row span { font-size: 11px; font-weight: 600; color: #475569; }
+        input[type="color"] { width: 30px; height: 20px; border-radius: 4px; border: 1px solid #ddd; cursor: pointer; background: none; }
+        input[type="text"] { width: 100%; padding: 6px; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 11px; margin-top: 4px; }
+
+        .admin-controls { position: absolute; top: 10px; right: 10px; opacity: 0; transition: 0.5s; pointer-events: none; }
+        .price-card:hover .admin-controls, .instruction-step:hover .admin-controls, .sponsor-card:hover .admin-controls { opacity: 1; pointer-events: auto; }
+        .benefit-controls { position: absolute; right: 0; top: 0; opacity: 0; transition: 0.2s; }
+        .price-card:hover .benefit-controls { opacity: 1; }
+        
+        .sponsor-card { position: relative; transition: 0.5s; padding: 30px; }
+        .sponsor-img { max-height: 60px; object-fit: contain; cursor: pointer; }
+    </style>
+</head>
+<body class="font-sans">
+
+    <div id="toggle-btn" onclick="toggleController()" style="position:fixed; left:15px; top:85px; z-index:10001; background:#4f46e5; color:white; width:45px; height:45px; border-radius:12px; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4); font-size: 20px;">🎨</div>
+
+    <div id="theme-controller">
+        <div class="flex justify-between items-center mb-4">
+            <h4 class="text-xs font-black text-slate-800">PAGE CONTROLLER</h4>
+            <span onclick="toggleController()" class="cursor-pointer text-lg">×</span>
+        </div>
+        
+        <div class="control-group">
+            <h5>1. Browser Tab Settings</h5>
+            <input type="text" id="tab-title-input" oninput="updatePageTitle(this.value)" placeholder="Edit Tab Title...">
+        </div>
+
+        <div class="control-group">
+            <h5>2. Global & Hero</h5>
+            <div class="input-row"><span>Accent Color</span><input type="color" id="c-accent" value="#6366f1" oninput="updateTheme()"></div>
+            <div class="input-row"><span>Page BG</span><input type="color" id="c-page-bg" value="#f8fafc" oninput="updateTheme()"></div>
+            <div class="input-row"><span>Hero BG</span><input type="color" id="c-hero-bg" value="#1e1b4b" oninput="updateTheme()"></div>
+            <div class="input-row"><span>Sponsors BG</span><input type="color" id="c-sponsors-bg" value="#f8fafc" oninput="updateTheme()"></div>
+        </div>
+
+        <div class="control-group">
+            <h5>3. Header & Navigation</h5>
+            <div class="input-row"><span>Header BG</span><input type="color" id="c-header-bg" value="#ffffff" oninput="updateTheme()"></div>
+            <div class="input-row"><span>Nav BG</span><input type="color" id="c-nav-bg" value="#0f172a" oninput="updateTheme()"></div>
+            <div class="input-row"><span>Nav Text</span><input type="color" id="c-nav-text" value="#ffffff" oninput="updateTheme()"></div>
+        </div>
+
+        <div class="control-group">
+            <h5>4. Pricing & Sections</h5>
+            <div class="input-row"><span>Card BG</span><input type="color" id="c-card-bg" value="#ffffff" oninput="updateTheme()"></div>
+            <div class="input-row"><span>CR Section BG</span><input type="color" id="c-cr-bg" value="#ffffff" oninput="updateTheme()"></div>
+        </div>
+
+        <div class="control-group">
+            <h5>5. Submission & Footer</h5>
+            <div class="input-row"><span>Sub BG</span><input type="color" id="c-sub-bg" value="#0f172a" oninput="updateTheme()"></div>
+            <div class="input-row"><span>Footer BG</span><input type="color" id="c-footer-bg" value="#020617" oninput="updateTheme()"></div>
+        </div>
+    </div>
+
+    <div class="fixed bottom-8 left-1/2 -translate-x-1/2 z-[9999]" id="admin-ui">
+        <button onclick="downloadPage()" class="bg-indigo-600 hover:bg-slate-900 text-white px-10 py-4 rounded-full font-bold shadow-2xl transition-all transform hover:scale-105 flex items-center gap-2 uppercase">
+            <span>DOWNLOAD PROGRAM PAGE</span> ⬇️
+        </button>
+    </div>
+
+    <div id="capture-area">
+        <header id="main-header" class="py-4 px-10 flex justify-between items-center border-b border-slate-100" style="background: var(--header-bg);">
+            <div class="flex items-center gap-4">
+                <input type="file" id="logo-input" class="hidden" onchange="handleLogoUpload(this)">
+                <img id="logo-img" onclick="document.getElementById('logo-input').click()" 
+                     src="https://via.placeholder.com/200x50?text=UPLOAD+LOGO" 
+                     class="h-10 cursor-pointer object-contain">
+            </div>
+            <div class="text-right">
+                <p contenteditable="true" class="text-xs font-bold uppercase tracking-widest" style="color: var(--header-text)">Author Resources</p>
+                <p contenteditable="true" class="text-sm font-semibold italic" style="color: var(--header-text)">Registration & Submission</p>
+            </div>
+        </header>
+
+        <nav id="navbar" class="py-3 px-6 sticky top-0 z-50 shadow-lg" style="background: var(--nav-bg);">
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="HOME.html" target="_blank" class="nav-link" data-final="HOME.html">HOME</a>
+                <a href="CALLS.html" target="_blank" class="nav-link" data-final="CALLS.html">CALLS</a>
+                <a href="COMMITTEE.html" target="_blank" class="nav-link" data-final="COMMITTEE.html">COMMITTEE</a>
+                <a href="KEYNOTE_SPEAKERS.html" target="_blank" class="nav-link" data-final="KEYNOTE_SPEAKERS.html">KEYNOTE SPEAKERS</a>
+                <a href="AUTHORS.html" target="_blank" class="nav-link" data-final="AUTHORS.html">AUTHORS</a>
+                <a href="WORKSHOPS.html" target="_blank" class="nav-link" data-final="WORKSHOPS.html">WORKSHOPS</a>
+                <a href="PROGRAM.html" target="_blank" class="nav-link" data-final="PROGRAM.html">PROGRAM</a>
+                <a href="REGISTRATION.html" target="_blank" class="nav-link" style="color: var(--accent-color); border-bottom: 2px solid var(--accent-color);" data-final="REGISTRATION.html">REGISTRATION</a>
+                <a href="FINAL_CAMERA_READY.html" target="_blank" class="nav-link" data-final="FINAL_CAMERA_READY.html">FINAL CAMERA READY</a>
+                <a href="VENUE.html" target="_blank" class="nav-link" data-final="VENUE.html">VENUE</a>
+                <a href="JOURNAL_SPECIAL_ISSUES.html" target="_blank" class="nav-link" data-final="JOURNAL_SPECIAL_ISSUES.html">JOURNAL SPECIAL ISSUES</a>
+            </div>
+        </nav>
+
+        <section id="hero-sec" class="py-20 px-10 text-center" style="background: var(--hero-bg);">
+            <h1 contenteditable="true" class="text-4xl md:text-5xl font-black mb-4 uppercase italic tracking-tighter" style="color: var(--hero-text);">Registration & Final Submission</h1>
+            <p contenteditable="true" class="text-lg" style="color: var(--hero-subtitle);">Complete your participation and prepare your final manuscript</p>
+        </section>
+
+        <main class="max-w-6xl mx-auto py-16 px-6">
+            <div class="mb-20">
+                <div class="flex justify-between items-center mb-10 border-b-4 pb-2" style="border-color: var(--accent-color);">
+                    <h2 contenteditable="true" class="text-3xl font-black uppercase italic" style="color: var(--card-title)">Registration Fees</h2>
+                    <button onclick="addPriceCard()" class="text-white px-4 py-1 rounded-lg text-xs font-bold" style="background: var(--accent-color);">➕ Add Fee Tier</button>
+                </div>
+
+                <div id="price-grid" class="grid md:grid-cols-3 gap-6">
+                    <div class="price-card p-8 rounded-3xl relative" id="price-1">
+                        <div class="admin-controls">
+                            <button onclick="addBenefit('price-1')" class="text-green-600 font-bold mr-2">➕</button>
+                            <button onclick="deleteElement('price-1')" class="text-red-500 font-bold">✕</button>
+                        </div>
+                        <h3 contenteditable="true" class="font-black text-sm uppercase mb-2" style="color: var(--accent-color)">Regular Author</h3>
+                        <div contenteditable="true" class="text-4xl font-black mb-6" style="color: var(--card-title)">$450</div>
+                        <ul class="space-y-3 text-sm mb-8 benefit-list" style="color: var(--price-list-text);">
+                            <li class="benefit-row">
+                                <span contenteditable="true">• Full Conference Access</span>
+                                <div class="benefit-controls"><button onclick="this.parentElement.parentElement.remove()" class="text-red-400 text-xs">✕</button></div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div id="cr-section" class="rounded-[2.5rem] p-12 shadow-sm border border-slate-100 mb-20 transition-all" style="background: var(--cr-section-bg);">
+                <h2 contenteditable="true" class="text-3xl font-black mb-8 uppercase italic" style="color: var(--cr-title-color)">Camera Ready Instructions</h2>
+                <div id="instructions-container">
+                    <div class="instruction-step group" id="step-1">
+                        <div class="admin-controls"><button onclick="deleteElement('step-1')" class="text-red-400">✕</button></div>
+                        <div class="step-number">1</div>
+                        <h4 contenteditable="true" class="font-bold text-lg uppercase italic" style="color: var(--card-title)">Address Reviewer Comments</h4>
+                        <p contenteditable="true" class="text-sm italic" style="color: var(--price-list-text)">Please revise your manuscript carefully based on the reviewers' feedback.</p>
+                    </div>
+                </div>
+                <button onclick="addInstructionStep()" class="mt-4 bg-slate-100 text-slate-600 px-6 py-2 rounded-xl text-xs font-bold hover:bg-slate-200 transition">➕ Add Instruction Step</button>
+            </div>
+
+            <div id="sub-portal-sec" class="p-10 rounded-[2.5rem] text-center mb-20" style="background: var(--sub-bg); color: var(--sub-text);">
+                <h3 contenteditable="true" class="text-2xl font-black mb-4 uppercase">Ready to Submit?</h3>
+                <p contenteditable="true" class="mb-8 opacity-80">Click the button below to go to the submission portal</p>
+                <div id="submission-btn" contenteditable="true" class="inline-block px-12 py-4 rounded-2xl font-black shadow-lg hover:opacity-90 transition-all cursor-pointer" style="background: var(--sub-btn-bg); color: var(--sub-btn-text);">
+                    SUBMIT FINAL PAPER & REGISTER
+                </div>
+            </div>
+
+            <div id="sponsor-section" class="py-12 rounded-[2.5rem] transition-all" style="background: var(--sponsors-bg);">
+                <div class="flex justify-between items-center px-10 mb-8 border-b border-slate-200/50 pb-4">
+                    <h2 contenteditable="true" class="text-xl font-black uppercase italic" style="color: var(--card-title)">Our Sponsors</h2>
+                    <button onclick="addSponsor()" class="bg-slate-800 text-white px-4 py-1 rounded-lg text-[10px] font-bold">➕ ADD SPONSOR</button>
+                </div>
+                <div id="sponsor-grid" class="flex flex-wrap justify-center items-center gap-10 px-6">
+                    <div class="sponsor-card" id="sp-1">
+                        <div class="admin-controls"><button onclick="deleteElement('sp-1')" class="text-red-500 font-bold">✕</button></div>
+                        <input type="file" class="hidden" onchange="handleSponsorUpload(this)">
+                        <img onclick="this.previousElementSibling.click()" src="https://via.placeholder.com/150x60?text=SPONSOR" class="sponsor-img">
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer id="main-footer" class="py-16 px-10 text-center border-t border-indigo-900/30" style="background: var(--footer-bg); color: var(--footer-text);">
+            <div contenteditable="true" id="footer-conf-title" class="text-2xl font-black mb-4 italic uppercase tracking-widest">Conference 2025</div>
+            <p contenteditable="true" class="text-xs">Innovation • Research • Technology</p>
+            <p contenteditable="true" class="mt-2 text-[10px] opacity-50">Jordan University of Science and Technology - Irbid</p>
+        </footer>
+    </div>
+
+    <script>
+        function toggleController() {
+            const panel = document.getElementById('theme-controller');
+            panel.style.display = (panel.style.display === 'none' || panel.style.display === '') ? 'block' : 'none';
+        }
+
+        function updateTheme() {
+            const root = document.documentElement;
+            root.style.setProperty('--accent-color', document.getElementById('c-accent').value);
+            root.style.setProperty('--page-bg', document.getElementById('c-page-bg').value);
+            root.style.setProperty('--hero-bg', document.getElementById('c-hero-bg').value);
+            root.style.setProperty('--header-bg', document.getElementById('c-header-bg').value);
+            root.style.setProperty('--nav-bg', document.getElementById('c-nav-bg').value);
+            root.style.setProperty('--nav-text', document.getElementById('c-nav-text').value);
+            root.style.setProperty('--card-bg', document.getElementById('c-card-bg').value);
+            root.style.setProperty('--cr-section-bg', document.getElementById('c-cr-bg').value);
+            root.style.setProperty('--sub-bg', document.getElementById('c-sub-bg').value);
+            root.style.setProperty('--footer-bg', document.getElementById('c-footer-bg').value);
+            root.style.setProperty('--sponsors-bg', document.getElementById('c-sponsors-bg').value);
+        }
+
+        function updatePageTitle(val) { document.title = val; }
+        
+        function handleLogoUpload(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => document.getElementById('logo-img').src = e.target.result;
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function handleSponsorUpload(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => input.nextElementSibling.src = e.target.result;
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        let sponsorId = 1;
+        function addSponsor() {
+            sponsorId++;
+            const grid = document.getElementById('sponsor-grid');
+            const div = document.createElement('div');
+            div.className = 'sponsor-card';
+            div.id = `sp-${sponsorId}`;
+            div.innerHTML = `
+                <div class="admin-controls"><button onclick="deleteElement('sp-${sponsorId}')" class="text-red-500 font-bold">✕</button></div>
+                <input type="file" class="hidden" onchange="handleSponsorUpload(this)">
+                <img onclick="this.previousElementSibling.click()" src="https://via.placeholder.com/150x60?text=SPONSOR" class="sponsor-img">
+            `;
+            grid.appendChild(div);
+        }
+
+        function addPriceCard() {
+            const grid = document.getElementById('price-grid');
+            const id = 'price-' + Date.now();
+            const div = document.createElement('div');
+            div.className = 'price-card p-8 rounded-3xl relative';
+            div.id = id;
+            div.innerHTML = `
+                <div class="admin-controls">
+                    <button onclick="addBenefit('${id}')" class="text-green-600 font-bold mr-2">➕</button>
+                    <button onclick="deleteElement('${id}')" class="text-red-500 font-bold">✕</button>
+                </div>
+                <h3 contenteditable="true" class="font-black text-sm uppercase mb-2" style="color: var(--accent-color)">New Tier</h3>
+                <div contenteditable="true" class="text-4xl font-black mb-6" style="color: var(--card-title)">$000</div>
+                <ul class="space-y-3 text-sm mb-8 benefit-list">
+                    <li class="benefit-row">
+                        <span contenteditable="true">• New Benefit</span>
+                        <div class="benefit-controls"><button onclick="this.parentElement.parentElement.remove()" class="text-red-400 text-xs">✕</button></div>
+                    </li>
+                </ul>
+            `;
+            grid.appendChild(div);
+        }
+
+        function addBenefit(cardId) {
+            const list = document.querySelector(`#${cardId} .benefit-list`);
+            const li = document.createElement('li');
+            li.className = 'benefit-row';
+            li.innerHTML = `<span contenteditable="true">• New Item</span><div class="benefit-controls"><button onclick="this.parentElement.parentElement.remove()" class="text-red-400 text-xs">✕</button></div>`;
+            list.appendChild(li);
+        }
+
+        function addInstructionStep() {
+            const container = document.getElementById('instructions-container');
+            const id = 'step-' + Date.now();
+            const count = container.children.length + 1;
+            const div = document.createElement('div');
+            div.className = 'instruction-step group';
+            div.id = id;
+            div.innerHTML = `
+                <div class="admin-controls"><button onclick="deleteElement('${id}')" class="text-red-400">✕</button></div>
+                <div class="step-number">${count}</div>
+                <h4 contenteditable="true" class="font-bold text-lg uppercase italic" style="color: var(--card-title)">New Step</h4>
+                <p contenteditable="true" class="text-sm italic" style="color: var(--price-list-text)">Details...</p>
+            `;
+            container.appendChild(div);
+        }
+
+        function deleteElement(id) { if(confirm('Delete this?')) document.getElementById(id).remove(); }
+
+        function downloadPage() {
+            const clone = document.documentElement.cloneNode(true);
+            clone.querySelector('#theme-controller').remove();
+            clone.querySelector('#toggle-btn').remove();
+            clone.querySelector('#admin-ui').remove();
+            clone.querySelectorAll('.admin-controls').forEach(el => el.remove());
+            clone.querySelectorAll('.benefit-controls').forEach(el => el.remove());
+            clone.querySelectorAll('button').forEach(btn => { if(btn.innerText.includes('➕')) btn.remove(); });
+            clone.querySelectorAll('input[type="file"]').forEach(el => el.remove());
+            clone.querySelectorAll('.nav-link').forEach(link => {
+                const final = link.getAttribute('data-final');
+                if(final) {
+                    link.setAttribute('href', final);
+                    link.removeAttribute('target');
+                    link.removeAttribute('data-final');
+                }
+            });
+            clone.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+            const finalHTML = '<!DOCTYPE html>\n' + clone.outerHTML;
+            const blob = new Blob([finalHTML], { type: 'text/html' });
+            const a = document.createElement('a');
+            a.href = window.URL.createObjectURL(blob);
+            a.download = 'REGISTRATION.html';
+            a.click();
+        }
+    </script>
+</body>
+</html>

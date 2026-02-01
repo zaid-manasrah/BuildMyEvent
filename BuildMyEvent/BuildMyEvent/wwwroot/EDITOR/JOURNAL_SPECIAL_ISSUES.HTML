@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-ptr-title">Journal Special Issues - Full Customization</title>
+    <link id="favicon-link" rel="icon" type="image/x-icon" href="https://via.placeholder.com/32">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style id="theme-vars">
+        :root {
+            --accent-color: #6366f1;
+            --page-bg: #f8fafc;
+            --header-bg: #ffffff;
+            --header-text: #1e293b;
+            --nav-bg: #0f172a;
+            --nav-text: #ffffff;
+            --hero-bg: #020617;
+            --hero-text: #ffffff;
+            --hero-subtitle: #94a3b8;
+            --card-bg: #ffffff;
+            --card-title: #0f172a;
+            --card-text: #475569;
+            --sponsors-bg: #ffffff; /* متغير جديد لخلفية الرعاة */
+            --footer-bg: #020617;
+            --footer-text: #64748b;
+        }
+
+        body { background-color: var(--page-bg); color: var(--card-text); transition: 0.3s; }
+        
+        .nav-link { color: var(--nav-text); font-weight: 600; font-size: 10px; text-transform: uppercase; white-space: nowrap; cursor: pointer; transition: 0.3s; opacity: 0.8; }
+        .nav-link:hover { color: var(--accent-color) !important; opacity: 1; }
+        
+        [contenteditable]:focus { outline: none; background: rgba(99, 102, 241, 0.05); border-radius: 8px; box-shadow: 0 0 0 2px var(--accent-color); }
+        
+        .journal-card { background: var(--card-bg); border-radius: 2.5rem; border: 1px solid #e2e8f0; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; }
+        .journal-card:hover { transform: translateY(-10px); box-shadow: 0 30px 60px -12px rgba(0,0,0,0.1); border-color: var(--accent-color); }
+        .journal-card h2 { color: var(--card-title); }
+        
+        #theme-controller { 
+            position: fixed; left: 15px; top: 140px; background: white; padding: 15px; 
+            border-radius: 12px; box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            z-index: 10000; width: 280px; border: 1px solid #e2e8f0; max-height: 75vh; overflow-y: auto;
+            display: none; 
+        }
+        .control-group { margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #f1f5f9; }
+        .control-group h5 { font-size: 10px; font-weight: 900; color: #4f46e5; margin-bottom: 8px; text-transform: uppercase; }
+        .input-row { margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+        .input-row span { font-size: 11px; font-weight: 600; color: #475569; }
+        input[type="color"] { width: 30px; height: 20px; border-radius: 4px; border: 1px solid #ddd; cursor: pointer; background: none; }
+        input[type="text"] { width: 100%; padding: 6px; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 11px; margin-top: 4px; }
+
+        .admin-controls { position: absolute; top: 20px; right: 20px; opacity: 0; transition: 0.3s; z-index: 20; }
+        .journal-card:hover .admin-controls, .sponsor-item:hover .admin-controls { opacity: 1; }
+        
+        .line-item { position: relative; }
+        .delete-line { display: none; position: absolute; left: -25px; top: 0; color: #ef4444; font-weight: bold; cursor: pointer; }
+        .journal-card:hover .delete-line { display: inline; }
+
+        /* ستايل الرعاة */
+        .sponsor-item { position: relative; padding: 10px; transition: 0.3s; }
+        .sponsor-item:hover { transform: scale(1.05); }
+    </style>
+</head>
+<body class="font-sans">
+
+    <div id="toggle-btn" onclick="toggleController()" style="position:fixed; left:15px; top:85px; z-index:10001; background:#4f46e5; color:white; width:45px; height:45px; border-radius:12px; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4); font-size: 20px;">🎨</div>
+
+    <div id="theme-controller">
+        <div class="flex justify-between items-center mb-4">
+            <h4 class="text-xs font-black text-slate-800">JOURNAL CONTROLLER</h4>
+            <span onclick="toggleController()" class="cursor-pointer text-lg">×</span>
+        </div>
+        
+        <div class="control-group">
+            <h5>1. Browser Settings</h5>
+            <label class="text-[10px] font-bold">Tab Title</label>
+            <input type="text" id="tab-title-input" oninput="updatePageTitle(this.value)" placeholder="Edit Browser Tab Title...">
+        </div>
+
+        <div class="control-group">
+            <h5>2. General Theme</h5>
+            <div class="input-row"><span>Accent Color</span><input type="color" id="c-accent" value="#6366f1" oninput="updateTheme()"></div>
+            <div class="input-row"><span>Page Background</span><input type="color" id="c-page-bg" value="#f8fafc" oninput="updateTheme()"></div>
+        </div>
+
+        <div class="control-group">
+            <h5>3. Header & Nav</h5>
+            <div class="input-row"><span>Header BG</span><input type="color" id="c-header-bg" value="#ffffff" oninput="updateTheme()"></div>
+            <div class="input-row"><span>Header Text</span><input type="color" id="c-header-text" value="#1e293b" oninput="updateTheme()"></div>
+            <div class="input-row"><span>Nav BG</span><input type="color" id="c-nav-bg" value="#0f172a" oninput="updateTheme()"></div>
+            <div class="input-row"><span>Nav Links</span><input type="color" id="c-nav-text" value="#ffffff" oninput="updateTheme()"></div>
+        </div>
+
+        <div class="control-group">
+            <h5>4. Hero Section</h5>
+            <div class="input-row"><span>Hero BG</span><input type="color" id="c-hero-bg" value="#020617" oninput="updateTheme()"></div>
+            <div class="input-row"><span>Title Color</span><input type="color" id="c-hero-text" value="#ffffff" oninput="updateTheme()"></div>
+            <div class="input-row"><span>Subtitle Color</span><input type="color" id="c-hero-sub" value="#94a3b8" oninput="updateTheme()"></div>
+        </div>
+
+        <div class="control-group">
+            <h5>5. Cards & Footer</h5>
+            <div class="input-row"><span>Card BG</span><input type="color" id="c-card-bg" value="#ffffff" oninput="updateTheme()"></div>
+            <div class="input-row"><span>Card Title</span><input type="color" id="c-card-title" value="#0f172a" oninput="updateTheme()"></div>
+            <div class="input-row"><span>Sponsors BG</span><input type="color" id="c-sponsors-bg" value="#ffffff" oninput="updateTheme()"></div>
+            <div class="input-row"><span>Footer BG</span><input type="color" id="c-footer-bg" value="#020617" oninput="updateTheme()"></div>
+            <div class="input-row"><span>Footer Text</span><input type="color" id="c-footer-text" value="#64748b" oninput="updateTheme()"></div>
+        </div>
+    </div>
+
+    <div class="fixed bottom-8 left-1/2 -translate-x-1/2 z-[9999]" id="admin-ui">
+        <button onclick="downloadPage()" class="bg-indigo-600 hover:bg-slate-900 text-white px-10 py-4 rounded-full font-bold shadow-2xl transition-all transform hover:scale-105 flex items-center gap-2 uppercase">
+            <span>SAVE CLEAN PAGE</span> ⬇️
+        </button>
+    </div>
+
+    <div id="capture-area">
+        <div id="main-header" class="py-4 px-10 flex justify-between items-center border-b border-slate-100" style="background: var(--header-bg); color: var(--header-text);">
+            <div class="flex items-center gap-4">
+                <input type="file" id="logo-input" class="hidden" onchange="handleLogoUpload(this)">
+                <img id="logo-img" onclick="document.getElementById('logo-input').click()" 
+                     src="https://via.placeholder.com/200x50?text=UPLOAD+LOGO" 
+                     class="h-10 cursor-pointer object-contain">
+            </div>
+            <div class="text-right italic">
+                <p contenteditable="true" class="text-xs font-bold uppercase tracking-widest" style="color: var(--accent-color)">Publication Partners</p>
+                <p contenteditable="true" class="text-sm font-semibold">Extended Versions Opportunity</p>
+            </div>
+        </div>
+
+        <nav id="navbar" class="border-b border-slate-800 py-3 px-6 sticky top-0 z-50 shadow-lg" style="background: var(--nav-bg);">
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="HOME.html" target="_blank" class="nav-link" data-final="HOME.html">HOME</a>
+                <a href="CALLS.html" target="_blank" class="nav-link" data-final="CALLS.html">CALLS</a>
+                <a href="COMMITTEE.html" target="_blank" class="nav-link" data-final="COMMITTEE.html">COMMITTEE</a>
+                <a href="KEYNOTE_SPEAKERS.html" target="_blank" class="nav-link" data-final="KEYNOTE_SPEAKERS.html">KEYNOTE SPEAKERS</a>
+                <a href="AUTHORS.html" target="_blank" class="nav-link" data-final="AUTHORS.html">AUTHORS</a>
+                <a href="WORKSHOPS.html" target="_blank" class="nav-link" data-final="WORKSHOPS.html">WORKSHOPS</a>
+                <a href="PROGRAM.html" target="_blank" class="nav-link" data-final="PROGRAM.html">PROGRAM</a>
+                <a href="REGISTRATION.html" target="_blank" class="nav-link" data-final="REGISTRATION.html">REGISTRATION</a>
+                <a href="FINAL_CAMERA_READY.html" target="_blank" class="nav-link" data-final="FINAL_CAMERA_READY.html">FINAL CAMERA READY</a>
+                <a href="VENUE.html" target="_blank" class="nav-link" data-final="VENUE.html">VENUE</a>
+                <a href="JOURNAL_SPECIAL_ISSUES.html" target="_blank" class="nav-link border-b-2" style="color: var(--accent-color); border-color: var(--accent-color);" data-final="JOURNAL_SPECIAL_ISSUES.html">JOURNAL SPECIAL ISSUES</a>
+            </div>
+        </nav>
+
+        <section id="hero-sec" class="py-24 px-10 text-center relative overflow-hidden" style="background: var(--hero-bg);">
+            <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#6366f1_1px,transparent_1px)] [background-size:20px_20px]"></div>
+            <h1 id="main-title" contenteditable="true" class="text-4xl md:text-6xl font-black uppercase tracking-tighter italic transition-colors duration-300 mb-6" style="color: var(--hero-text);">
+                Journal Special Issues
+            </h1>
+            <p id="main-subtitle" contenteditable="true" class="max-w-3xl mx-auto text-lg leading-relaxed italic transition-colors duration-300" style="color: var(--hero-subtitle);">
+                The 10 highest-scoring papers from this event will be offered an opportunity to publish an extended version in our partner journals.
+            </p>
+        </section>
+
+        <main class="max-w-6xl mx-auto py-20 px-6">
+            <div class="grid md:grid-cols-2 gap-10" id="journal-container">
+                <div class="journal-card" id="j-1">
+                    <div class="admin-controls">
+                        <button onclick="deleteElement('j-1')" class="bg-red-500 text-white w-8 h-8 rounded-full shadow-lg">✕</button>
+                    </div>
+                    <div class="p-10">
+                        <div class="flex justify-between items-start mb-6">
+                            <span contenteditable="true" class="badge-q1 italic uppercase">JCR - Q1</span>
+                            <div contenteditable="true" class="font-black text-2xl italic" style="color: var(--accent-color)">IF: 2.6</div>
+                        </div>
+                        <h2 contenteditable="true" class="text-3xl font-black mb-4 leading-tight italic uppercase">MDPI Electronics</h2>
+                        <ul class="space-y-4 mb-6 list-holder">
+                            <li class="flex items-start gap-3 line-item">
+                                <span class="delete-line" onclick="this.parentElement.remove()">−</span>
+                                <span class="text-green-500">✔</span>
+                                <span contenteditable="true" class="text-sm italic">Indexed within Scopus & Web of Science.</span>
+                            </li>
+                        </ul>
+                        <button onclick="addLine(this)" class="text-[10px] font-bold uppercase tracking-widest admin-btn mb-6" style="color: var(--accent-color)">+ Add Information Line</button>
+                        <div contenteditable="true" class="text-xs font-bold text-slate-400 tracking-widest uppercase border-t pt-6 italic">Confirmed Partner 2025</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-16 text-center" id="admin-actions">
+                <button onclick="addJournalCard()" class="bg-indigo-600 text-white px-12 py-5 rounded-2xl font-black uppercase tracking-widest hover:bg-slate-900 transition-all shadow-xl" style="background: var(--accent-color);">
+                    ➕ Add Another Partner Journal
+                </button>
+            </div>
+        </main>
+
+        <section id="sponsors-section" class="py-16 transition-colors" style="background: var(--sponsors-bg);">
+            <div class="max-w-6xl mx-auto px-6">
+                <div class="flex justify-between items-center mb-10">
+                    <h2 contenteditable="true" class="text-2xl font-black uppercase italic opacity-50">Our Sponsors</h2>
+                    <button id="add-sponsor-btn" onclick="addSponsor()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-[10px] font-bold uppercase">➕ Add Sponsor Logo</button>
+                </div>
+                <div id="sponsors-grid" class="flex flex-wrap justify-center items-center gap-10">
+                    </div>
+            </div>
+        </section>
+
+        <footer id="footer-sec" class="py-16 px-10 text-center border-t border-white/5" style="background: var(--footer-bg); color: var(--footer-text);">
+            <div contenteditable="true" class="text-2xl font-black mb-4 italic uppercase tracking-widest" style="color: var(--footer-text);">Publication Center</div>
+            <p contenteditable="true" class="text-xs italic">Jordan University of Science and Technology - Irbid</p>
+        </footer>
+    </div>
+
+    <script>
+        let sponsorCount = 0;
+
+        function toggleController() {
+            const panel = document.getElementById('theme-controller');
+            panel.style.display = (panel.style.display === 'none' || panel.style.display === '') ? 'block' : 'none';
+        }
+
+        function updateTheme() {
+            const root = document.documentElement;
+            root.style.setProperty('--accent-color', document.getElementById('c-accent').value);
+            root.style.setProperty('--page-bg', document.getElementById('c-page-bg').value);
+            root.style.setProperty('--header-bg', document.getElementById('c-header-bg').value);
+            root.style.setProperty('--header-text', document.getElementById('c-header-text').value);
+            root.style.setProperty('--nav-bg', document.getElementById('c-nav-bg').value);
+            root.style.setProperty('--nav-text', document.getElementById('c-nav-text').value);
+            root.style.setProperty('--hero-bg', document.getElementById('c-hero-bg').value);
+            root.style.setProperty('--hero-text', document.getElementById('c-hero-text').value);
+            root.style.setProperty('--hero-subtitle', document.getElementById('c-hero-sub').value);
+            root.style.setProperty('--card-bg', document.getElementById('c-card-bg').value);
+            root.style.setProperty('--card-title', document.getElementById('c-card-title').value);
+            root.style.setProperty('--sponsors-bg', document.getElementById('c-sponsors-bg').value);
+            root.style.setProperty('--footer-bg', document.getElementById('c-footer-bg').value);
+            root.style.setProperty('--footer-text', document.getElementById('c-footer-text').value);
+        }
+
+        function updatePageTitle(val) { document.title = val; }
+        
+        function handleLogoUpload(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    document.getElementById('logo-img').src = e.target.result;
+                    document.getElementById('favicon-link').href = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function addSponsor() {
+            sponsorCount++;
+            const grid = document.getElementById('sponsors-grid');
+            const div = document.createElement('div');
+            div.className = 'sponsor-item group';
+            div.id = `sp-${sponsorCount}`;
+            div.innerHTML = `
+                <div class="admin-controls" style="top:-10px; right:-10px; opacity:1">
+                    <button onclick="document.getElementById('sp-${sponsorCount}').remove()" class="bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-[10px] shadow-lg">✕</button>
+                </div>
+                <input type="file" class="hidden" onchange="previewSponsor(this, 'img-sp-${sponsorCount}')">
+                <img id="img-sp-${sponsorCount}" onclick="this.previousElementSibling.click()" src="https://via.placeholder.com/150x80?text=LOGO" class="h-16 object-contain cursor-pointer grayscale hover:grayscale-0 transition opacity-60 hover:opacity-100">
+            `;
+            grid.appendChild(div);
+        }
+
+        function previewSponsor(input, imgId) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => document.getElementById(imgId).src = e.target.result;
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function addLine(btn) {
+            const list = btn.previousElementSibling;
+            const li = document.createElement('li');
+            li.className = 'flex items-start gap-3 line-item';
+            li.innerHTML = `
+                <span class="delete-line" onclick="this.parentElement.remove()">−</span>
+                <span class="text-green-500">✔</span>
+                <span contenteditable="true" class="text-sm italic">New information line...</span>
+            `;
+            list.appendChild(li);
+        }
+
+        function addJournalCard() {
+            const id = 'j-' + Date.now();
+            const container = document.getElementById('journal-container');
+            const div = document.createElement('div');
+            div.className = 'journal-card';
+            div.id = id;
+            div.innerHTML = `
+                <div class="admin-controls">
+                    <button onclick="deleteElement('${id}')" class="bg-red-500 text-white w-8 h-8 rounded-full shadow-lg">✕</button>
+                </div>
+                <div class="p-10">
+                    <div class="flex justify-between items-start mb-6">
+                        <span contenteditable="true" class="badge-q1 italic uppercase">RANK</span>
+                        <div contenteditable="true" class="font-black text-2xl italic" style="color: var(--accent-color)">IF: 0.0</div>
+                    </div>
+                    <h2 contenteditable="true" class="text-3xl font-black mb-4 leading-tight italic uppercase">Journal Name</h2>
+                    <ul class="space-y-4 mb-6 list-holder">
+                        <li class="flex items-start gap-3 line-item">
+                            <span class="delete-line" onclick="this.parentElement.remove()">−</span>
+                            <span class="text-green-500">✔</span>
+                            <span contenteditable="true" class="text-sm italic">Information line...</span>
+                        </li>
+                    </ul>
+                    <button onclick="addLine(this)" class="text-[10px] font-bold uppercase tracking-widest admin-btn mb-6" style="color: var(--accent-color)">+ Add Information Line</button>
+                    <div contenteditable="true" class="text-xs font-bold text-slate-400 tracking-widest uppercase border-t pt-6 italic">Partner Journal</div>
+                </div>
+            `;
+            container.appendChild(div);
+        }
+
+        function deleteElement(id) { if(confirm('Remove this journal?')) document.getElementById(id).remove(); }
+
+        function downloadPage() {
+            const clone = document.documentElement.cloneNode(true);
+            clone.querySelector('#theme-controller').remove();
+            clone.querySelector('#toggle-btn').remove();
+            clone.querySelector('#admin-ui').remove();
+            clone.querySelector('#admin-actions').remove();
+            clone.querySelector('#add-sponsor-btn').remove();
+            clone.querySelectorAll('.admin-controls').forEach(el => el.remove());
+            clone.querySelectorAll('.admin-btn').forEach(el => el.remove());
+            clone.querySelectorAll('.delete-line').forEach(el => el.remove());
+            clone.querySelectorAll('input[type="file"]').forEach(el => el.remove());
+
+            clone.querySelectorAll('.nav-link').forEach(link => {
+                const final = link.getAttribute('data-final');
+                if(final) {
+                    link.setAttribute('href', final);
+                    link.removeAttribute('target');
+                    link.removeAttribute('data-final');
+                }
+            });
+
+            clone.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+
+            const finalHTML = '<!DOCTYPE html>\n' + clone.outerHTML;
+            const blob = new Blob([finalHTML], { type: 'text/html' });
+            const a = document.createElement('a');
+            a.href = window.URL.createObjectURL(blob);
+            a.download = 'JOURNAL_SPECIAL_ISSUES.html';
+            a.click();
+        }
+    </script>
+</body>
+</html>

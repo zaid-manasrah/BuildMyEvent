@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="dynamic-title">Workshops Management - Builder</title>
+    <link id="favicon" rel="icon" type="image/x-icon" href="https://via.placeholder.com/32">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style id="custom-theme-styles">
+        :root {
+            --primary-color: #6366f1;
+            --nav-bg: #0f172a;
+            --nav-text: #ffffff;
+            --hero-bg: #1e1b4b;
+            --page-bg: #f8fafc;
+            --card-bg: #ffffff;
+            --card-title-color: #1e293b;
+            --card-desc-color: #64748b;
+            --card-lead-color: #1e293b;
+            --top-header-bg: #ffffff;
+            --top-header-text: #1e293b;
+            --hero-text: #ffffff;
+            --proposal-container-bg: #ffffff;
+            --proposal-title-color: #6366f1;
+            --proposal-text-color: #1e293b;
+            --submit-card-bg: rgba(99, 102, 241, 0.05);
+            --submit-card-text: #6366f1;
+            --footer-bg: #020617;
+            --footer-text: #ffffff;
+            --sponsors-bg: #ffffff;
+        }
+
+        body { background-color: var(--page-bg); transition: 0.3s; font-family: sans-serif; }
+        #top-header { background-color: var(--top-header-bg); color: var(--top-header-text); }
+        #main-nav { background-color: var(--nav-bg); }
+        #hero-section { background-color: var(--hero-bg); color: var(--hero-text); }
+        #main-footer { background-color: var(--footer-bg); color: var(--footer-text); transition: 0.3s; }
+        #sponsors-section { background-color: var(--sponsors-bg); }
+
+        .nav-link { 
+            color: var(--nav-text); 
+            font-weight: 600; 
+            font-size: 9px; 
+            text-transform: uppercase; 
+            white-space: nowrap; 
+            transition: 0.3s; 
+            opacity: 0.8;
+            padding: 4px 2px;
+        }
+        .nav-link:hover { opacity: 1; color: var(--primary-color) !important; }
+        .nav-active { color: var(--primary-color) !important; border-bottom: 2px solid var(--primary-color); opacity: 1; }
+
+        .workshop-card { 
+            background-color: var(--card-bg); 
+            border: 1px solid #e2e8f0; 
+            border-radius: 20px; 
+            padding: 25px; 
+            transition: 0.3s; 
+            position: relative; 
+        }
+        .workshop-card h3 { color: var(--card-title-color); }
+        .workshop-card p.description { color: var(--card-desc-color); }
+        .workshop-card .lead-text { color: var(--card-lead-color); }
+        .workshop-card:hover { border-color: var(--primary-color); transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        
+        #proposal-outer-container { background-color: var(--proposal-container-bg); }
+        #proposal-outer-container h2, #proposal-outer-container h3 { color: var(--proposal-title-color); }
+        #proposal-outer-container p, #proposal-outer-container div { color: var(--proposal-text-color); }
+        #submit-section-card { background-color: var(--submit-card-bg); border-color: rgba(99, 102, 241, 0.1); }
+        #submit-section-card h3, #submit-email-box { color: var(--submit-card-text) !important; }
+
+        .format-item { border-left: 3px solid var(--primary-color); padding-left: 15px; margin-bottom: 15px; position: relative; }
+        [contenteditable]:focus { outline: 2px solid var(--primary-color); background: rgba(255, 255, 255, 0.5); border-radius: 4px; }
+        
+        .admin-controls { position: absolute; top: 10px; right: 10px; opacity: 0; transition: 0.3s; display: flex; gap: 5px; }
+        .workshop-card:hover .admin-controls, .format-item:hover .admin-controls, .sponsor-item:hover .admin-controls { opacity: 1; }
+
+        #theme-panel {
+            position: fixed; left: 15px; top: 140px; background: white; padding: 15px; 
+            border-radius: 12px; box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            z-index: 10000; width: 280px; border: 1px solid #e2e8f0; max-height: 70vh; overflow-y: auto;
+        }
+        .control-section { margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #f1f5f9; }
+        .control-section h5 { font-size: 10px; font-weight: 900; color: #4f46e5; margin-bottom: 8px; text-transform: uppercase; }
+        .input-group { margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+        .input-group label { font-size: 11px; font-weight: 600; color: #475569; }
+        input[type="color"] { width: 30px; height: 20px; border-radius: 4px; border: 1px solid #ddd; cursor: pointer; }
+        input[type="text"] { width: 100%; padding: 6px; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 11px; margin-top: 4px; }
+
+        .sponsor-img { height: 60px; object-fit: contain; filter: grayscale(100%); transition: 0.3s; cursor: pointer; }
+        .sponsor-img:hover { filter: grayscale(0%); }
+    </style>
+</head>
+<body>
+
+    <div id="toggle-panel-btn" onclick="togglePanel()" style="position:fixed; left:15px; top:85px; z-index:10001; background:#4f46e5; color:white; width:45px; height:45px; border-radius:12px; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4); font-size: 20px;">🎨</div>
+
+    <div id="theme-panel" style="display:none;">
+        <div class="flex justify-between items-center mb-4">
+            <h4 class="text-xs font-black text-slate-800 tracking-tighter">PAGE CONTROLLER</h4>
+            <span onclick="togglePanel()" class="cursor-pointer text-lg font-bold">×</span>
+        </div>
+        
+        <div class="control-section">
+            <h5>1. Global & General</h5>
+            <div class="input-group-stack mb-2">
+                <label class="text-[11px] font-semibold text-slate-600">Window Title</label>
+                <input type="text" id="page-title-input" value="Workshops Management - Builder" oninput="updatePageTitle(this.value)">
+            </div>
+            <div class="input-group"><label>Accent Color</label><input type="color" id="cp-primary" value="#6366f1" oninput="updateTheme()"></div>
+            <div class="input-group"><label>Page Background</label><input type="color" id="cp-page-bg" value="#f8fafc" oninput="updateTheme()"></div>
+            <div class="input-group"><label>Sponsors BG</label><input type="color" id="cp-sponsors-bg" value="#ffffff" oninput="updateTheme()"></div>
+        </div>
+
+        <div class="control-section">
+            <h5>2. Top Header</h5>
+            <div class="input-group"><label>Header BG</label><input type="color" id="cp-header-bg" value="#ffffff" oninput="updateTheme()"></div>
+            <div class="input-group"><label>Header Text</label><input type="color" id="cp-header-text" value="#1e293b" oninput="updateTheme()"></div>
+        </div>
+
+        <div class="control-section">
+            <h5>3. Navigation Bar</h5>
+            <div class="input-group"><label>Nav Background</label><input type="color" id="cp-nav-bg" value="#0f172a" oninput="updateTheme()"></div>
+            <div class="input-group"><label>Nav Text Color</label><input type="color" id="cp-nav-text" value="#ffffff" oninput="updateTheme()"></div>
+        </div>
+
+        <div class="control-section">
+            <h5>4. Hero Section</h5>
+            <div class="input-group"><label>Hero BG</label><input type="color" id="cp-hero-bg" value="#1e1b4b" oninput="updateTheme()"></div>
+            <div class="input-group"><label>Hero Text</label><input type="color" id="cp-hero-text" value="#ffffff" oninput="updateTheme()"></div>
+        </div>
+
+        <div class="control-section">
+            <h5>5. Workshop Cards</h5>
+            <div class="input-group"><label>Card Background</label><input type="color" id="cp-card-bg" value="#ffffff" oninput="updateTheme()"></div>
+            <div class="input-group"><label>Title Color</label><input type="color" id="cp-card-title" value="#1e293b" oninput="updateTheme()"></div>
+        </div>
+
+        <div class="control-section">
+            <h5>6. Proposal & Submission</h5>
+            <div class="input-group"><label>Container BG</label><input type="color" id="cp-prop-bg" value="#ffffff" oninput="updateTheme()"></div>
+            <div class="input-group"><label>Titles Color</label><input type="color" id="cp-prop-title" value="#6366f1" oninput="updateTheme()"></div>
+        </div>
+        
+        <div class="control-section">
+            <h5>7. Footer</h5>
+            <div class="input-group"><label>Footer BG</label><input type="color" id="cp-footer-bg" value="#020617" oninput="updateTheme()"></div>
+            <div class="input-group"><label>Footer Text</label><input type="color" id="cp-footer-text" value="#ffffff" oninput="updateTheme()"></div>
+        </div>
+    </div>
+
+    <div id="capture-area">
+        <div id="top-header" class="py-4 px-10 flex justify-between items-center border-b border-slate-100 transition-colors duration-300">
+            <div class="flex items-center gap-4">
+                <input type="file" id="logo-input" class="hidden" onchange="handleLogoUpload(this)">
+                <img id="logo-img" onclick="document.getElementById('logo-input').click()" 
+                     src="https://via.placeholder.com/200x50?text=UPLOAD+LOGO" 
+                     class="h-10 cursor-pointer object-contain">
+            </div>
+            <div class="text-right">
+                <p contenteditable="true" class="text-xs font-bold uppercase tracking-widest" style="color: var(--primary-color)">Workshop Sessions</p>
+                <p contenteditable="true" class="text-sm font-semibold italic">Join Professional Learning</p>
+            </div>
+        </div>
+
+        <nav id="main-nav" class="py-3 px-4 sticky top-0 z-50 shadow-lg">
+            <div class="flex flex-wrap justify-center gap-2">
+                <a href="HOME.html" target="_blank" class="nav-link" data-final="HOME.html">HOME</a>
+                <a href="CALLS.html" target="_blank" class="nav-link" data-final="CALLS.html">CALLS</a>
+                <a href="COMMITTEE.html" target="_blank" class="nav-link" data-final="COMMITTEE.html">COMMITTEE</a>
+                <a href="KEYNOTE_SPEAKERS.html" target="_blank" class="nav-link" data-final="KEYNOTE_SPEAKERS.html">KEYNOTE SPEAKERS</a>
+                <a href="AUTHORS.html" target="_blank" class="nav-link" data-final="AUTHORS.html">AUTHORS</a>
+                <a href="WORKSHOPS.html" target="_blank" class="nav-link nav-active" data-final="WORKSHOPS.html">WORKSHOPS</a>
+                <a href="PROGRAM.html" target="_blank" class="nav-link" data-final="PROGRAM.html">PROGRAM</a>
+                <a href="REGISTRATION.html" target="_blank" class="nav-link" data-final="REGISTRATION.html">REGISTRATION</a>
+                <a href="FINAL_CAMERA_READY.html" target="_blank" class="nav-link" data-final="FINAL_CAMERA_READY.html">FINAL CAMERA READY</a>
+                <a href="VENUE.html" target="_blank" class="nav-link" data-final="VENUE.html">VENUE</a>
+                <a href="JOURNAL_SPECIAL_ISSUES.html" target="_blank" class="nav-link" data-final="JOURNAL_SPECIAL_ISSUES.html">JOURNAL SPECIAL ISSUES</a>
+            </div>
+        </nav>
+
+        <section id="hero-section" class="py-20 px-10 text-center">
+            <h1 contenteditable="true" class="text-4xl md:text-5xl font-black mb-4 uppercase">Workshops</h1>
+            <p contenteditable="true" class="text-lg italic opacity-90">Explore hands-on technical sessions and call for proposals</p>
+        </section>
+
+        <main class="max-w-6xl mx-auto py-16 px-6">
+            <div class="mb-24">
+                <div class="flex justify-between items-center mb-10 border-b-4 pb-2" style="border-color: var(--primary-color)">
+                    <h2 contenteditable="true" class="text-3xl font-black uppercase italic">Approved Workshops</h2>
+                    <button onclick="addWorkshop()" id="admin-add-ws" class="text-white px-4 py-1 rounded-lg text-xs font-bold" style="background: var(--primary-color)">➕ Add Workshop</button>
+                </div>
+                <div id="workshops-grid" class="grid md:grid-cols-2 gap-8">
+                    <div class="workshop-card" id="ws-1">
+                        <div class="admin-controls"><button onclick="deleteElement('ws-1')" class="bg-red-500 text-white p-1 rounded text-[10px]">Delete</button></div>
+                        <span contenteditable="true" class="px-3 py-1 rounded-full text-[10px] font-black uppercase mb-4 inline-block tracking-widest" style="background: rgba(99, 102, 241, 0.1); color: var(--primary-color)">Workshop ID: WS-01</span>
+                        <h3 contenteditable="true" class="text-xl font-bold mb-2">Advanced Machine Learning in Healthcare</h3>
+                        <p contenteditable="true" class="description text-sm mb-4 leading-relaxed italic">"Practical insights into deploying medical AI models with privacy preservation."</p>
+                        <div class="flex items-center gap-2 border-t pt-4">
+                            <span contenteditable="true" class="lead-text text-xs font-bold">Led by: Dr. Alice Smith</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="proposal-outer-container" class="rounded-[2.5rem] p-12 shadow-sm border border-slate-100 mb-20 transition-all duration-300">
+                <h2 contenteditable="true" class="text-3xl font-black mb-6 uppercase">Call for Workshop Proposals</h2>
+                <div id="format-container" class="space-y-4 mb-10">
+                    <div class="format-item group relative" id="fmt-1">
+                        <div class="admin-controls"><button onclick="deleteElement('fmt-1')" class="bg-red-500 text-white p-1 rounded text-[10px]">Delete</button></div>
+                        <h4 contenteditable="true" class="font-bold italic">1. Title and Abstract</h4>
+                        <p contenteditable="true" class="text-sm opacity-70">A clear title and a 200-word summary of the workshop's goals.</p>
+                    </div>
+                </div>
+                <button onclick="addFormatItem()" id="admin-add-fmt" class="bg-slate-100 text-slate-600 px-4 py-2 rounded-xl text-xs font-bold mb-10">➕ Add Point</button>
+
+                <div id="submit-section-card" class="p-10 rounded-3xl border-2 text-center transition-all duration-300">
+                    <h3 contenteditable="true" class="text-2xl font-black mb-4 uppercase">Submit New Workshop</h3>
+                    <div id="submit-email-box" contenteditable="true" class="inline-block bg-white px-10 py-4 rounded-2xl border font-black text-xl shadow-sm" style="border-color: var(--primary-color)">
+                        workshops-chair@university.edu.jo
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <section id="sponsors-section" class="py-12 px-10 border-t border-slate-100">
+            <div class="max-w-6xl mx-auto">
+                <div class="flex justify-between items-center mb-8">
+                    <h4 contenteditable="true" class="text-[10px] font-black uppercase tracking-widest opacity-40">Our Sponsors & Partners</h4>
+                    <button onclick="addSponsor()" id="admin-add-sponsor" class="text-[10px] font-bold bg-slate-100 px-3 py-1 rounded-full hover:bg-slate-200 transition">＋ Add Sponsor</button>
+                </div>
+                <div id="sponsors-grid" class="flex flex-wrap justify-center items-center gap-12">
+                    <div class="relative group sponsor-item" id="sp-1">
+                        <div class="admin-controls"><button onclick="deleteElement('sp-1')" class="bg-red-500 text-white p-1 rounded text-[8px]">✕</button></div>
+                        <input type="file" class="hidden" onchange="previewSponsor(this)">
+                        <img onclick="this.previousElementSibling.click()" src="https://via.placeholder.com/150x60?text=SPONSOR" class="sponsor-img">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer id="main-footer" class="py-16 px-10 text-center border-t">
+            <div contenteditable="true" class="text-2xl font-black mb-4 italic uppercase tracking-widest">Conference 2025</div>
+            <p contenteditable="true" class="text-xs italic opacity-60">Jordan University of Science and Technology - Irbid</p>
+        </footer>
+    </div>
+
+    <div style="position:fixed; bottom:30px; right:30px; z-index:9999;">
+        <button onclick="downloadPage()" class="bg-indigo-600 hover:scale-105 text-white px-8 py-4 rounded-2xl font-black shadow-2xl flex items-center gap-3 transition-all border-4 border-white/20">
+            SAVE & DOWNLOAD PAGE 📥
+        </button>
+    </div>
+
+    <script>
+        let wsCounter = 1;
+        let fmtCounter = 1;
+        let spCounter = 1;
+
+        function togglePanel() {
+            const panel = document.getElementById('theme-panel');
+            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function updatePageTitle(val) { document.title = val; }
+
+        function updateTheme() {
+            const root = document.documentElement;
+            root.style.setProperty('--primary-color', document.getElementById('cp-primary').value);
+            root.style.setProperty('--page-bg', document.getElementById('cp-page-bg').value);
+            root.style.setProperty('--top-header-bg', document.getElementById('cp-header-bg').value);
+            root.style.setProperty('--top-header-text', document.getElementById('cp-header-text').value);
+            root.style.setProperty('--nav-bg', document.getElementById('cp-nav-bg').value);
+            root.style.setProperty('--nav-text', document.getElementById('cp-nav-text').value);
+            root.style.setProperty('--hero-bg', document.getElementById('cp-hero-bg').value);
+            root.style.setProperty('--hero-text', document.getElementById('cp-hero-text').value);
+            root.style.setProperty('--card-bg', document.getElementById('cp-card-bg').value);
+            root.style.setProperty('--card-title-color', document.getElementById('cp-card-title').value);
+            root.style.setProperty('--proposal-container-bg', document.getElementById('cp-prop-bg').value);
+            root.style.setProperty('--proposal-title-color', document.getElementById('cp-prop-title').value);
+            root.style.setProperty('--footer-bg', document.getElementById('cp-footer-bg').value);
+            root.style.setProperty('--footer-text', document.getElementById('cp-footer-text').value);
+            root.style.setProperty('--sponsors-bg', document.getElementById('cp-sponsors-bg').value);
+        }
+
+        function handleLogoUpload(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    document.getElementById('logo-img').src = e.target.result;
+                    document.getElementById('favicon').href = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function addWorkshop() {
+            wsCounter++;
+            const grid = document.getElementById('workshops-grid');
+            const div = document.createElement('div');
+            div.className = 'workshop-card';
+            div.id = `ws-${wsCounter}`;
+            div.innerHTML = `
+                <div class="admin-controls"><button onclick="deleteElement('ws-${wsCounter}')" class="bg-red-500 text-white p-1 rounded text-[10px]">Delete</button></div>
+                <span contenteditable="true" class="px-3 py-1 rounded-full text-[10px] font-black uppercase mb-4 inline-block tracking-widest" style="background: rgba(99, 102, 241, 0.1); color: var(--primary-color)">Workshop ID: WS-NEW</span>
+                <h3 contenteditable="true" class="text-xl font-bold mb-2">New Workshop Title</h3>
+                <p contenteditable="true" class="description text-sm mb-4 leading-relaxed">Description here...</p>
+                <div class="flex items-center gap-2 border-t pt-4">
+                    <span contenteditable="true" class="lead-text text-xs font-bold">Led by: Organizer Name</span>
+                </div>
+            `;
+            grid.appendChild(div);
+        }
+
+        function addFormatItem() {
+            fmtCounter++;
+            const container = document.getElementById('format-container');
+            const div = document.createElement('div');
+            div.className = 'format-item group relative';
+            div.id = `fmt-${fmtCounter}`;
+            div.innerHTML = `
+                <div class="admin-controls"><button onclick="deleteElement('fmt-${fmtCounter}')" class="bg-red-500 text-white p-1 rounded text-[10px]">Delete</button></div>
+                <h4 contenteditable="true" class="font-bold italic">${fmtCounter}. New Point</h4>
+                <p contenteditable="true" class="text-sm opacity-70">Details here...</p>
+            `;
+            container.appendChild(div);
+        }
+
+        function addSponsor() {
+            spCounter++;
+            const grid = document.getElementById('sponsors-grid');
+            const div = document.createElement('div');
+            div.className = 'relative group sponsor-item';
+            div.id = `sp-${spCounter}`;
+            div.innerHTML = `
+                <div class="admin-controls"><button onclick="deleteElement('sp-${spCounter}')" class="bg-red-500 text-white p-1 rounded text-[8px]">✕</button></div>
+                <input type="file" class="hidden" onchange="previewSponsor(this)">
+                <img onclick="this.previousElementSibling.click()" src="https://via.placeholder.com/150x60?text=SPONSOR" class="sponsor-img">
+            `;
+            grid.appendChild(div);
+        }
+
+        function previewSponsor(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => input.nextElementSibling.src = e.target.result;
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function deleteElement(id) { if(confirm('Are you sure?')) document.getElementById(id).remove(); }
+
+        function downloadPage() {
+            const clone = document.documentElement.cloneNode(true);
+            clone.querySelector('#theme-panel').remove();
+            clone.querySelector('#toggle-panel-btn').remove();
+            clone.querySelector('#admin-add-ws').remove();
+            clone.querySelector('#admin-add-fmt').remove();
+            clone.querySelector('#admin-add-sponsor').remove();
+            clone.querySelectorAll('.admin-controls').forEach(ctrl => ctrl.remove());
+            clone.querySelectorAll('button').forEach(btn => { if(btn.innerText.includes('SAVE')) btn.remove() });
+            clone.querySelectorAll('input[type="file"]').forEach(i => i.remove());
+            clone.querySelectorAll('.nav-link').forEach(link => {
+                const finalName = link.getAttribute('data-final');
+                if(finalName) {
+                    link.setAttribute('href', finalName);
+                    link.removeAttribute('target');
+                    link.removeAttribute('data-final');
+                }
+            });
+            clone.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+            const finalHTML = '<!DOCTYPE html>\n' + clone.outerHTML;
+            const blob = new Blob([finalHTML], { type: 'text/html' });
+            const a = document.createElement('a');
+            a.href = window.URL.createObjectURL(blob);
+            a.download = 'WORKSHOPS.html';
+            a.click();
+        }
+    </script>
+</body>
+</html>
